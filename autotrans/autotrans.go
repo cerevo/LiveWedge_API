@@ -27,7 +27,7 @@ var defaultParams = Params{
 	Trans: 0x32, /* Dip to 4 */
 	Rate: 5000,
 	StartLiveBroadcast: false,
-	UploadStillPicture: true,
+	UploadStillPicture: false,
 }
 
 func loop(vsw Vsw, pa Params, notify chan Params) {
