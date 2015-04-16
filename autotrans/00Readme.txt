@@ -1,4 +1,4 @@
-Auto transition sample
+# Auto transition sample
 
 ## How to build
 
@@ -13,18 +13,17 @@ Auto transition sample
 ## How to run
 
 (0) Find LiveWedge's IP address by iPad
-(1) Run command as below
+(1) Run the command as below
 
-  ./autorun IP_address_of_LiveWedge
+  ./autotrans IP_address_of_LiveWedge
 
-example)
-  ./autorun 172.16.130.244
+  example)
+  ./autotrans 172.16.130.244
 
 (2) Open WebUI by any web browser
 
   http://localhost:8080/
 
 Note:
-  A file name of A still picuture to upload is fixed to 'a.jpg'.
-
-
+* The file name of A still picuture to upload is fixed to 'a.jpg'.
+* Settings are saved in 'autotrans.json'.
