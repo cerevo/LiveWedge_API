@@ -20,9 +20,9 @@ const (
 	SW_ID_UploadFile               = 12
 	SW_ID_DoAutoSwitching          = 0x1c
 	SW_ID_ChangeLiveBroadcastState = 0x12
+	SW_ID_ChangeRecordingState     = 0x14
 )
 
-//const SW_ID_ChangeRecordingState = 20
 //const SW_ID_SetTimezone = 0x48
 //const SW_ID_SetTime = 0x49
 //const SW_ID_SetTimeAndZone = 0x4a
@@ -197,7 +197,17 @@ func (vsw Vsw) Dip(param int, src int, dip_src int) {
 }
 
 func (vsw Vsw) ChangeLiveBroadcastState(mode int) {
+	if mode != 0 && mode != 1 {
+	   return
+	}
 	sendKeyValue(vsw.conn, SW_ID_ChangeLiveBroadcastState, mode)
+}
+
+func (vsw Vsw) ChangeRecordingState(mode int) {
+	if mode != 0 && mode != 1 {
+	   return
+	}
+	sendKeyValue(vsw.conn, SW_ID_ChangeRecordingState, mode)
 }
 
 func NewVsw(service string) Vsw {
