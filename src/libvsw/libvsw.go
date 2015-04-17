@@ -21,6 +21,7 @@ const (
 	SW_ID_DoAutoSwitching          = 0x1c
 	SW_ID_ChangeLiveBroadcastState = 0x12
 	SW_ID_ChangeRecordingState     = 0x14
+	SW_ID_RecordingState           = 0x25
 )
 
 //const SW_ID_SetTimezone = 0x48
@@ -67,6 +68,29 @@ func readBasicInfo(conn io.Reader) {
 	checkError(err)
 	//fmt.Printf("rev=%d update=%d ", rev, update)
 	//fmt.Printf("mac=%02x:%02x:%02x:%02x:%02x:%02x\n", mac[5], mac[4], mac[3], mac[2], mac[1], mac[0])
+}
+
+func readRecordingState(conn io.Reader) (state, result uint32) {
+	var len int32
+	err := binary.Read(conn, LE, &len)
+	checkError(err)
+	//fmt.Printf("len=%d\n", len)
+	if len != 12 {
+		fmt.Fprintf(os.Stderr, "libvsw: Fatal error \n")
+	}
+
+	var cmd uint32
+	err = binary.Read(conn, LE, &cmd)
+	checkError(err)
+	//fmt.Printf("cmd=%x\n", cmd)
+	if cmd != SW_ID_RecordingState {
+		fmt.Fprintf(os.Stderr, "libvsw: Fatal error \n")
+	}
+	err = binary.Read(conn, LE, &state)
+	checkError(err)
+	err = binary.Read(conn, LE, &result)
+	checkError(err)
+	return state, result
 }
 
 func read(conn io.Reader) {
@@ -198,16 +222,18 @@ func (vsw Vsw) Dip(param int, src int, dip_src int) {
 
 func (vsw Vsw) ChangeLiveBroadcastState(mode int) {
 	if mode != 0 && mode != 1 {
-	   return
+		return
 	}
 	sendKeyValue(vsw.conn, SW_ID_ChangeLiveBroadcastState, mode)
 }
 
 func (vsw Vsw) ChangeRecordingState(mode int) {
 	if mode != 0 && mode != 1 {
-	   return
+		return
 	}
 	sendKeyValue(vsw.conn, SW_ID_ChangeRecordingState, mode)
+	state, result := readRecordingState(vsw.conn)
+	log.Printf("recording state=%d, result=%d\n", state, result)
 }
 
 func NewVsw(service string) Vsw {
