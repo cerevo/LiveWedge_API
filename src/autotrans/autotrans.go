@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 	"log"
+	"libvsw"
 )
 const PARAM_VERSION = 3
 const PARAMS_FILE = "autotrans.json"
@@ -30,7 +31,7 @@ var defaultParams = Params{
 	UploadStillPicture: false,
 }
 
-func loop(vsw Vsw, pa Params, notify chan Params) {
+func loop(vsw libvsw.Vsw, pa Params, notify chan Params) {
 	index := 0
 	for {
 		select {
@@ -106,7 +107,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "usge: %s IP_address_of_livewedge\n", os.Args[0])
 		os.Exit(1)
 	}
-	vsw := NewVsw(os.Args[1])
+	vsw := libvsw.NewVsw(os.Args[1])
 	vsw.Cut(1)
 
 	pa := loadParams(PARAMS_FILE)
