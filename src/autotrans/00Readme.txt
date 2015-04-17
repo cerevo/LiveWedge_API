@@ -2,13 +2,13 @@
 
 ## How to build
 
-(0) Install go language. 
-    Tested in linux/amd64. Go version 1.4. 
-    I hope Mac/Windows works, too.
+(0) Install common library
+  See $TOP/readme.md
 
 (1) Build
+  In this directry:
 
-  go build *.go
+    go build
 
 ## How to run
 
