@@ -149,7 +149,7 @@ func (vsw Vsw) UploadFile(filename string) {
 
 type videoTransition struct {
 	cmd          uint32
-	value        uint32
+	cmdId        uint32
 	param        uint32
 	mode         uint8
 	padding      [3]uint8
@@ -209,7 +209,7 @@ const (
 
 func transMain(conn *net.TCPConn, param int, src int, effect int, dip int, manual int) {
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
-		value:        VALUE_1,
+		cmdId:        VALUE_1,
 		param:        uint32(param),
 		mode:         VC_MODE_MAIN,
 		main_src:     uint8(src),
