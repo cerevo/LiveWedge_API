@@ -3,30 +3,31 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"libvsw"
+	"log"
 	"os"
 	"time"
-	"log"
-	"libvsw"
 )
-const PARAM_VERSION = 3
+
+const PARAM_VERSION = 4
 const PARAMS_FILE = "autotrans.json"
 
 type Params struct {
-        Param_version int
-	Input    [4]bool
-	Interval int /* sec */
-	Trans int /* bit0-3 {CUT, MIX, DIP}, bit4-5:dip_src */
-	Rate int /* msec */
+	Param_version      int
+	Input              [4]bool
+	Interval           int /* sec */
+	Trans              int /* bit0-7 {CUT, MIX, DIP, WIPE, ..}, bit8-9:dip_src */
+	Rate               int /* msec */
 	StartLiveBroadcast bool
 	UploadStillPicture bool
 }
 
 var defaultParams = Params{
-        Param_version: PARAM_VERSION,
-	Input:    [4]bool{true, true, false, false},
-	Interval: 30,
-	Trans: 0x32, /* Dip to 4 */
-	Rate: 5000,
+	Param_version:      PARAM_VERSION,
+	Input:              [4]bool{true, true, false, false},
+	Interval:           30,
+	Trans:              0x302, /* Dip to 4 */
+	Rate:               5000,
 	StartLiveBroadcast: false,
 	UploadStillPicture: false,
 }
@@ -56,14 +57,16 @@ func loop(vsw libvsw.Vsw, pa Params, notify chan Params) {
 		for pa.Input[index] == false {
 			index = (index + 1) % 4
 		}
-		switch pa.Trans & 3 {
+		switch pa.Trans & 0xff {
 		case 0:
-		    vsw.Cut(index + 1)
+			vsw.Cut(index + 1)
 		case 1:
-		    vsw.Mix(pa.Rate, index + 1)
+			vsw.Mix(pa.Rate, index+1)
 		case 2:
-		    vsw.Dip(pa.Rate, index + 1, ((pa.Trans >> 4) & 3) + 1)
-		}    
+			vsw.Dip(pa.Rate, index+1, ((pa.Trans>>8)&3)+1)
+		default:
+			vsw.Wipe(pa.Rate, index+1, pa.Trans-libvsw.TRANSITION_TYPE_WIPE)
+		}
 	}
 }
 
@@ -111,12 +114,12 @@ func main() {
 	vsw.Cut(1)
 
 	pa := loadParams(PARAMS_FILE)
-	if (pa.StartLiveBroadcast) {
+	if pa.StartLiveBroadcast {
 		vsw.ChangeLiveBroadcastState(1)
-        }
-	if (pa.UploadStillPicture) {
+	}
+	if pa.UploadStillPicture {
 		vsw.UploadFile("a.jpg")
-        }
+	}
 
 	notify := make(chan Params, 1)
 	go loop(vsw, pa, notify)

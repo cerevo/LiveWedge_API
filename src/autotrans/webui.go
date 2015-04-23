@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"libvsw"
 	"net/http"
-	"strconv"
 	"os"
+	"strconv"
 )
 
 const f0 string = `<html><head>
@@ -26,9 +27,41 @@ const f1 string = `
     <option value="0">Cut</option>
     <option value="1">Mix</option>
     <option value="2">Dip to 1</option>
-    <option value="18">Dip to 2</option>
-    <option value="34">Dip to 3</option>
-    <option value="50">Dip to 4</option>
+    <option value="258">Dip to 2</option>
+    <option value="514">Dip to 3</option>
+    <option value="770">Dip to 4</option>
+
+    <option value="3">Wipe (horizontal)</option>
+    <option value="4">Wipe (horizontal_r)</option>
+    <option value="5">Wipe (vertical)</option>
+    <option value="6">Wipe (vertical_r)</option>
+    <option value="7">Wipe (horizontal_slide)</option>
+    <option value="8">Wipe (horizontal_slide_r)</option>
+    <option value="9">Wipe (vertical_slide)</option>
+    <option value="10">Wipe (vertical_slide_r)</option>
+    <option value="11">Wipe (horizontal_double_slide)</option>
+    <option value="12">Wipe (horizontal_double_slide_r)</option>
+    <option value="13">Wipe (vertical_double_slide)</option>
+    <option value="14">Wipe (vertical_double_slide_r)</option>
+    <option value="15">Wipe (square_top_left)</option>
+    <option value="16">Wipe (square_top_left_r)</option>
+    <option value="17">Wipe (square_top)</option>
+    <option value="18">Wipe (square_top_r)</option>
+    <option value="19">Wipe (square_top_right)</option>
+    <option value="20">Wipe (square_top_right_r)</option>
+    <option value="21">Wipe (square_center_left)</option>
+    <option value="22">Wipe (square_center_left_r)</option>
+    <option value="23">Wipe (square_center)</option>
+    <option value="24">Wipe (square_center_r)</option>
+    <option value="25">Wipe (square_center_right)</option>
+    <option value="26">Wipe (square_center_right_r)</option>
+    <option value="27">Wipe (square_bottom_left)</option>
+    <option value="28">Wipe (square_bottom_left_r)</option>
+    <option value="29">Wipe (square_bottom)</option>
+    <option value="30">Wipe (square_bottom_r)</option>
+    <option value="31">Wipe (square_bottom_right)</option>
+    <option value="32">Wipe (square_bottom_right_r)</option>
+
   </select> rate <select name="rate">
     <option value="5000"></option>
     <option value="1000">1 sec</option>
@@ -103,14 +136,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Fprintf(w, "transition mode: ")
-	switch params.Trans & 3 {
+	switch params.Trans & 0xff {
 	case 0:
-	   fmt.Fprintf(w, "cut<br/>")
+		fmt.Fprintf(w, "cut<br/>")
 	case 1:
-	   fmt.Fprintf(w, "mix, rate: %d msec<br/>", params.Rate)
-	case 2:   
-	   fmt.Fprintf(w, "dip to %d, rate: %d msec<br/>", ((params.Trans >> 4) & 3) + 1, params.Rate)
-        }
+		fmt.Fprintf(w, "mix, rate: %d msec<br/>", params.Rate)
+	case 2:
+		fmt.Fprintf(w, "dip to %d, rate: %d msec<br/>", ((params.Trans>>8)&3)+1, params.Rate)
+	default:
+		fmt.Fprintf(w, "wipe (%s), rate: %d msec<br/>", libvsw.WipeStr[(params.Trans&0xff)-3], params.Rate)
+	}
 	fmt.Fprintf(w, "interval: %d sec<br/>", params.Interval)
 	fmt.Fprintf(w, "<br/>Boot time options:<br/>")
 	fmt.Fprintf(w, "  Start live broadcasting: %t<br/>", params.StartLiveBroadcast)
