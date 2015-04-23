@@ -207,16 +207,25 @@ func openTcp(service string) *net.TCPConn {
 
 func (vsw Vsw) Cut(src int) {
 	//log.Printf("cut(%d)\n", src)
+	if src < 0 || 3 > src {
+		return
+	}
 	transMain(vsw.conn, 1, src, TRANSITION_TYPE_CUT, 0, 0)
 }
 
 func (vsw Vsw) Mix(param int, src int) {
 	//log.Printf("mix(%d, %d)\n", param, src)
+	if src < 0 || 3 > src {
+		return
+	}
 	transMain(vsw.conn, param, src, TRANSITION_TYPE_MIX, 0, 0)
 }
 
 func (vsw Vsw) Dip(param int, src int, dip_src int) {
 	//log.Printf("dip(%d, %d, %d)\n", param, src, dip_src)
+	if src < 0 || 3 > src {
+		return
+	}
 	transMain(vsw.conn, param, src, TRANSITION_TYPE_DIP, dip_src, 0)
 }
 
