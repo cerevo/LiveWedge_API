@@ -165,9 +165,47 @@ type videoTransition struct {
 
 const VALUE_1 = (1 << 16)
 const VC_MODE_MAIN = 0
-const TRANSITION_TYPE_CUT = 0
-const TRANSITION_TYPE_MIX = 1
-const TRANSITION_TYPE_DIP = 2
+
+const (
+	TRANSITION_TYPE_NULL = iota
+	TRANSITION_TYPE_MIX
+	TRANSITION_TYPE_DIP
+	TRANSITION_TYPE_WIPE
+	TRANSITION_TYPE_CUT = TRANSITION_TYPE_NULL
+)
+const (
+	WIPE_HORIZONTAL   = iota
+	WIPE_HORIZONTAL_R // _R means reversed pattern
+	WIPE_VERTICAL
+	WIPE_VERTICAL_R
+	WIPE_HORIZONTAL_SLIDE
+	WIPE_HORIZONTAL_SLIDE_R
+	WIPE_VERTICAL_SLIDE
+	WIPE_VERTICAL_SLIDE_R
+	WIPE_HORIZONTAL_DOUBLE_SLIDE
+	WIPE_HORIZONTAL_DOUBLE_SLIDE_R
+	WIPE_VERTICAL_DOUBLE_SLIDE
+	WIPE_VERTICAL_DOUBLE_SLIDE_R
+	WIPE_SQUARE_TOP_LEFT /* top to bottom and left to right order */
+	WIPE_SQUARE_TOP_LEFT_R
+	WIPE_SQUARE_TOP
+	WIPE_SQUARE_TOP_R
+	WIPE_SQUARE_TOP_RIGHT
+	WIPE_SQUARE_TOP_RIGHT_R
+	WIPE_SQUARE_CENTER_LEFT
+	WIPE_SQUARE_CENTER_LEFT_R
+	WIPE_SQUARE_CENTER
+	WIPE_SQUARE_CENTER_R
+	WIPE_SQUARE_CENTER_RIGHT
+	WIPE_SQUARE_CENTER_RIGHT_R
+	WIPE_SQUARE_BOTTOM_LEFT
+	WIPE_SQUARE_BOTTOM_LEFT_R
+	WIPE_SQUARE_BOTTOM
+	WIPE_SQUARE_BOTTOM_R
+	WIPE_SQUARE_BOTTOM_RIGHT
+	WIPE_SQUARE_BOTTOM_RIGHT_R
+	WIPE_TYPE_NUM
+)
 
 func transMain(conn *net.TCPConn, param int, src int, effect int, dip int, manual int) {
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
@@ -227,6 +265,17 @@ func (vsw Vsw) Dip(param int, src int, dip_src int) {
 		return
 	}
 	transMain(vsw.conn, param, src, TRANSITION_TYPE_DIP, dip_src, 0)
+}
+
+func (vsw Vsw) Wipe(param int, src int, wipe_type int) {
+	//log.Printf("wipe(%d, %d, %d)\n", param, src, wipe_type)
+	if src < 0 || 3 > src {
+		return
+	}
+	if wipe_type < 0 || wipe_type >= WIPE_TYPE_NUM {
+		return
+	}
+	transMain(vsw.conn, param, src, TRANSITION_TYPE_WIPE+wipe_type, 0, 0)
 }
 
 func (vsw Vsw) ChangeLiveBroadcastState(mode int) {
