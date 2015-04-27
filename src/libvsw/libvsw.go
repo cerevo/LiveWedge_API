@@ -17,11 +17,13 @@ import (
 var LE = binary.LittleEndian
 
 const (
-	SW_ID_UploadFile               = 12
+	SW_ID_UploadFile               = 0x0c
 	SW_ID_DoAutoSwitching          = 0x1c
 	SW_ID_ChangeLiveBroadcastState = 0x12
 	SW_ID_ChangeRecordingState     = 0x14
 	SW_ID_RecordingState           = 0x25
+	SW_ID_SetPinpGeometry          = 0x3d
+	SW_ID_SetSubMode               = 0x40
 )
 
 //const SW_ID_SetTimezone = 0x48
@@ -164,7 +166,11 @@ type videoTransition struct {
 }
 
 const VALUE_1 = (1 << 16)
-const VC_MODE_MAIN = 0
+const (
+	VC_MODE_MAIN = iota
+	VC_MODE_SUB
+	VC_MODE_US
+)
 
 const (
 	TRANSITION_TYPE_NULL = iota
@@ -229,6 +235,36 @@ func transMain(conn *net.TCPConn, param int, src int, effect int, dip int, manua
 	err = binary.Write(conn, LE, a)
 	checkError(err)
 }
+func transSub(conn *net.TCPConn, param int, src int, effect int, dip int, manual int) {
+	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
+		cmdId:       VALUE_1,
+		param:       uint32(param),
+		mode:        VC_MODE_SUB,
+		sub_src:     uint8(src),
+		sub_effect:  uint8(effect),
+		sub_dip_src: uint8(dip)}
+	size := uint32(unsafe.Sizeof(a))
+	err := binary.Write(conn, LE, size)
+	checkError(err)
+	err = binary.Write(conn, LE, a)
+	checkError(err)
+}
+
+func transUs(conn *net.TCPConn, param int, src int, src2 int, effect int, dip int, manual int) {
+	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
+		cmdId:        VALUE_1,
+		param:        uint32(param),
+		mode:         VC_MODE_US,
+		main_src:     uint8(src),
+		main_effect:  uint8(effect),
+		main_dip_src: uint8(dip),
+		sub_src:      uint8(src2)}
+	size := uint32(unsafe.Sizeof(a))
+	err := binary.Write(conn, LE, size)
+	checkError(err)
+	err = binary.Write(conn, LE, a)
+	checkError(err)
+}
 
 func openTcp(service string) *net.TCPConn {
 	if strings.IndexRune(service, ':') < 0 {
@@ -249,6 +285,28 @@ func (vsw Vsw) Cut(src int) {
 		return
 	}
 	transMain(vsw.conn, 1, src, TRANSITION_TYPE_CUT, 0, 0)
+}
+
+func (vsw Vsw) CutSub(src int) {
+	//log.Printf("cutSub(%d)\n", src)
+	if src < 1 || 4 < src {
+		return
+	}
+	transSub(vsw.conn, 1, src, TRANSITION_TYPE_CUT, 0, 0)
+}
+
+func (vsw Vsw) CutUs(src int, src2 int) {
+	//log.Printf("cutUs(%d,%d)\n", src, src2)
+	if src < 1 || 4 < src {
+		return
+	}
+	if src2 < 1 || 4 < src2 {
+		return
+	}
+	if src == src2 {
+		return
+	}
+	transUs(vsw.conn, 1, src, src2, TRANSITION_TYPE_CUT, 0, 0)
 }
 
 func (vsw Vsw) Mix(param int, src int) {
