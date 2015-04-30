@@ -13,6 +13,7 @@ import (
 var LE = binary.LittleEndian
 
 const (
+	SW_ID_SwBasicInfo              = 0x03
 	SW_ID_UploadFile               = 0x0c
 	SW_ID_DoAutoSwitching          = 0x1c
 	SW_ID_ChangeLiveBroadcastState = 0x12
@@ -28,7 +29,18 @@ const (
 //const SW_ID_GetTimeAndZone = 0x4b
 
 type Vsw struct {
-	conn *net.TCPConn
+	conn   *net.TCPConn
+	rev    int32
+	update int32
+	mac    [8]uint8
+}
+
+func (vsw Vsw) FirmwareRevision() int32 {
+	return vsw.rev
+}
+
+func (vsw Vsw) MacAddress() [8]uint8 {
+	return vsw.mac
 }
 
 func checkError(err error) {
@@ -51,51 +63,24 @@ func sendKeyValue(conn *net.TCPConn, key uint32, val int) {
 	send(conn, buf[:])
 }
 
-func readBasicInfo(conn io.Reader) {
-	//fmt.Printf("read BasicInfo: ")
-	var (
-		rev    int32
-		update int32
-		mac    [8]uint8
-	)
-	err := binary.Read(conn, LE, &rev)
-	checkError(err)
-	err = binary.Read(conn, LE, &update)
-	checkError(err)
-	err = binary.Read(conn, LE, &mac)
-	checkError(err)
-	//fmt.Printf("rev=%d update=%d ", rev, update)
-	//fmt.Printf("mac=%02x:%02x:%02x:%02x:%02x:%02x\n", mac[5], mac[4], mac[3], mac[2], mac[1], mac[0])
-}
-
-func read(conn io.Reader) {
+func readBasicInfo(vsw *Vsw) {
 	var len int32
-	err := binary.Read(conn, LE, &len)
+	err := binary.Read(vsw.conn, LE, &len)
 	checkError(err)
-	//fmt.Printf("len=%d\n", len)
 
 	var cmd uint32
-	err = binary.Read(conn, LE, &cmd)
+	err = binary.Read(vsw.conn, LE, &cmd)
 	checkError(err)
 
-	switch cmd {
-	case 35:
-		fmt.Printf("TCPHeartBeat\n")
-	case 3:
-		readBasicInfo(conn)
-	//case 0x7c:
-	//	readTimeAndZone(conn)
-	default:
-		fmt.Printf("cmd=%08x ", cmd)
-		len -= 4
-		for len > 0 {
-			err = binary.Read(conn, LE, &cmd)
-			checkError(err)
-			fmt.Printf("%08x ", cmd)
-			len -= 4
-		}
-		fmt.Printf("\n")
+	if cmd != SW_ID_SwBasicInfo {
+		return
 	}
+	err = binary.Read(vsw.conn, LE, &vsw.rev)
+	checkError(err)
+	err = binary.Read(vsw.conn, LE, &vsw.update)
+	checkError(err)
+	err = binary.Read(vsw.conn, LE, &vsw.mac)
+	checkError(err)
 }
 
 func openTcp(service string) *net.TCPConn {
@@ -107,7 +92,7 @@ func openTcp(service string) *net.TCPConn {
 
 	conn, err := net.DialTCP("tcp", nil, tcpAddr)
 	checkError(err)
-	log.Println("connected")
+	log.Println("TCP connected")
 	return conn
 }
 
@@ -115,6 +100,6 @@ func NewVsw(service string) Vsw {
 	log.Println("New Vsw for", service)
 	vsw := Vsw{}
 	vsw.conn = openTcp(service)
-	read(vsw.conn)
+	readBasicInfo(&vsw)
 	return vsw
 }
