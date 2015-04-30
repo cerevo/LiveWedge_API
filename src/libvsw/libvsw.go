@@ -19,7 +19,7 @@ const (
 	SW_ID_ChangeLiveBroadcastState = 0x12
 	SW_ID_ChangeRecordingState     = 0x14
 	SW_ID_TCPHeartBeat             = 0x23
-	SW_ID_RecordingState           = 0x25
+	SW_ID_RecordingResult          = 0x25
 	SW_ID_SetPinpGeometry          = 0x3d
 	SW_ID_SetSubMode               = 0x40
 )
@@ -43,7 +43,6 @@ func (vsw Vsw) FirmwareRevision() int32 {
 func (vsw Vsw) MacAddress() [8]uint8 {
 	return vsw.mac
 }
-
 
 func (vsw Vsw) HertBeat() {
 	buf := []uint32{SW_ID_TCPHeartBeat}
