@@ -40,7 +40,12 @@ func read(conn net.PacketConn) (SwApi_FindSwAck, net.Addr, error) {
 	buf := make([]byte, 4096)
 	len, peer, err := conn.ReadFrom(buf)
 	if err != nil {
-		return pkt, peer, err
+		if opErr, ok := err.(*net.OpError); ok {
+			if opErr.Timeout() {
+				return pkt, peer, err
+			}
+		}
+		log.Fatal(err)
 	}
 	//log.Println(len, "bytes read from", peer)
 	buffer := bytes.NewBuffer(buf[:len])
