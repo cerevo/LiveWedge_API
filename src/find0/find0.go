@@ -17,6 +17,14 @@ const (
 
 const DISPLAY_NAME_LENGTH = 33
 
+type AccessInfo struct {
+	address     string
+	udpPort     int
+	tcpPort     int
+	previewPort int
+	displayName string
+}
+
 type SwApi_FindSwAck struct {
 	Cmd         uint32
 	CommandPort uint16
@@ -25,11 +33,6 @@ type SwApi_FindSwAck struct {
 	Dummy       uint16
 	IsWiFiAP    uint32
 	DisplayName [DISPLAY_NAME_LENGTH]byte
-}
-
-type AddrOfVSw struct {
-	address     string
-	displayName string
 }
 
 var LE = binary.LittleEndian
@@ -65,7 +68,7 @@ func read(conn net.PacketConn) (SwApi_FindSwAck, net.Addr, error) {
 	return pkt, peer, nil
 }
 
-func find0() []AddrOfVSw {
+func find0() []AccessInfo {
 	conn, err := net.ListenPacket("udp", ":0")
 	if err != nil {
 		log.Fatal(err)
@@ -76,16 +79,21 @@ func find0() []AddrOfVSw {
 		log.Fatal(err)
 	}
 
+	// Send SW_ID_FindSw in little endian
 	if _, err := conn.WriteTo([]byte{1, 0, 0, 0}, dst); err != nil {
 		log.Fatal(err)
 	}
-	pkts := []AddrOfVSw{}
+	pkts := make([]AccessInfo, 0, 5)
 	for {
 		pkt, peer, err := read(conn)
 		if err != nil {
 			break
 		}
-		a := AddrOfVSw{}
+		a := AccessInfo{
+			udpPort:     int(pkt.CommandPort),
+			tcpPort:     int(pkt.TcpPort),
+			previewPort: int(pkt.PreviewPort),
+		}
 		a.address = strings.Split(peer.String(), ":")[0]
 		n := bytes.Index(pkt.DisplayName[:], []byte{0})
 		a.displayName = string(pkt.DisplayName[:n])
@@ -97,6 +105,6 @@ func find0() []AddrOfVSw {
 func main() {
 	items := find0()
 	for _, v := range items {
-		fmt.Printf("%s:\t%s\n", v.address, v.displayName)
+		fmt.Printf("%#v\n", v)
 	}
 }
