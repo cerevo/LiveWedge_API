@@ -24,7 +24,7 @@ var (
 	_%[1]sChan chan %[1]sType
 )
 
-func Request%[1]s() <-chan %[1]sType {
+func (vsw Vsw) Request%[1]s() <-chan %[1]sType {
 	if _%[1]sChan == nil {
 		_%[1]sChan = make(chan %[1]sType)
 	}
@@ -40,7 +40,7 @@ func read%[1]s(len int, reader *bytes.Reader) {
 	err := binary.Read(reader, LE, &a)
 	checkError(err)
 	if %[1]s != a {
-		log.Printf("%%#v\n", a)
+		//log.Printf("%%#v\n", a)
 		%[1]s = a
 	        if _%[1]sChan != nil {
 		       _%[1]sChan <- a

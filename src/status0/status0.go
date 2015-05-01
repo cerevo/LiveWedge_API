@@ -13,15 +13,15 @@ func main() {
 	}
 	vsw := libvsw.NewVsw(os.Args[1])
 
-	c := libvsw.RequestSwitcherStatus()
-	c2 := libvsw.RequestAudioPeakStatus()
+	c := vsw.RequestSwitcherStatus()
+	c2 := vsw.RequestAudioPeakStatus()
 	for {
 		vsw.HeartBeat()
 		select {
 		case ss := <-c:
-			fmt.Printf("Got from chan! %v", ss)
+			fmt.Printf("status0: %#v\n", ss)
 		case ss := <-c2:
-			fmt.Printf("Got from chan! %v", ss)
+			fmt.Printf("status0: %#v\n", ss)
 		}
 	}
 }
