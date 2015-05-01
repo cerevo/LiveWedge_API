@@ -1,5 +1,8 @@
 package main
 
+// Type 'go generate' to generate a.go.
+//go:generate go run gen/gen.go
+
 import (
 	"bytes"
 	"encoding/binary"
@@ -11,7 +14,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	"unsafe"
 )
 
 const (
@@ -88,6 +90,10 @@ type AudioMixerAllStatusType struct {
 	Mute, Delay uint16
 }
 
+type AudioPeakStatusType struct {
+	Peak [14]uint16
+}
+
 type RecordingStatusType struct {
 	RecordingTime, RecordRemainTIme uint32
 }
@@ -151,7 +157,7 @@ var (
 	SwMode                   uint32
 	MountStatus              uint32
 	PreviewMode              uint32
-	DefautBackGroundColor    uint32
+	DefaultBackgroundColor   uint32
 	SwitcherStatus           SwitcherStatusType
 	ProgramOutStatus         ProgramOutStatusType
 	PreviewOutStatus         PreviewOutStatusType
@@ -160,7 +166,7 @@ var (
 	RecordingStatus          RecordingStatusType
 	AudioMixerAllStatus      AudioMixerAllStatusType
 	AudioMixerStatus         AudioMixerStatusType
-	AudioPeakStatus          [14]uint16
+	AudioPeakStatus          AudioPeakStatusType
 	CasterMessage            CasterMessageType
 	CasterStatistics         CasterStatisticsType
 )
@@ -220,11 +226,11 @@ func read(conn io.Reader) {
 	case SW_STATE_ID_StatePreviewMode:
 		readPreviewMode(len, reader)
 	case SW_STATUS_ID_AudioMixer:
-		readAudioMixer(len, reader)
+		readAudioMixerStatus(len, reader)
 	case SW_STATUS_ID_AudioMixerAll:
-		readAudioMixerAll(len, reader)
+		readAudioMixerAllStatus(len, reader)
 	case SW_STATUS_ID_AudioPeak:
-		readAudioPeak(len, reader)
+		readAudioPeakStatus(len, reader)
 	case SW_STATUS_ID_VideoSwitcher, SW_STATUS_ID_VideoSwitcherAuto:
 		readSwitcherStatus(len, reader)
 	case SW_ID_MountNotify:
@@ -242,215 +248,6 @@ func read(conn io.Reader) {
 			len -= 4
 		}
 		log.Printf("\n")
-	}
-}
-
-func readSwMode(len int, reader *bytes.Reader) {
-	var a uint32
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if SwMode != a {
-		log.Printf("Mode %#v\n", a)
-		SwMode = a
-	}
-
-}
-
-func readRecordingStatus(len int, reader *bytes.Reader) {
-	var a RecordingStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if RecordingStatus != a {
-		log.Printf("%#v\n", a)
-		RecordingStatus = a
-	}
-}
-
-func readFadeToDefaultColorStatus(len int, reader *bytes.Reader) {
-	var a FadeToDefaultColorStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if FadeToDefaultColorStatus != a {
-		log.Printf("%#v\n", a)
-		FadeToDefaultColorStatus = a
-	}
-}
-
-func readExternalInputStatus(len int, reader *bytes.Reader) {
-	var a ExternalInputStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if ExternalInputStatus != a {
-		log.Printf("%#v\n", a)
-		ExternalInputStatus = a
-	}
-}
-
-func readProgramOutStatus(len int, reader *bytes.Reader) {
-	var a ProgramOutStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if ProgramOutStatus != a {
-		log.Printf("%#v\n", a)
-		ProgramOutStatus = a
-	}
-}
-
-func readPreviewOutStatus(len int, reader *bytes.Reader) {
-	var a PreviewOutStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if PreviewOutStatus != a {
-		log.Printf("%#v\n", a)
-		PreviewOutStatus = a
-	}
-}
-
-func readDefaultBackgroundColor(len int, reader *bytes.Reader) {
-	var a uint32
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if DefautBackGroundColor != a {
-		log.Printf("DefaultBackgroundColor %#v\n", a)
-		DefautBackGroundColor = a
-	}
-}
-
-func readPreviewMode(len int, reader *bytes.Reader) {
-	var a uint32
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if PreviewMode != a {
-		log.Printf("PreviewMode %#v\n", a)
-		PreviewMode = a
-	}
-}
-
-func readMountStatus(len int, reader *bytes.Reader) {
-	var a uint32
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if MountStatus != a {
-		log.Printf("MountStatus %#v\n", a)
-		MountStatus = a
-	}
-}
-
-func readCasterMessage(len int, reader *bytes.Reader) {
-	var a CasterMessageType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if CasterMessage != a {
-		log.Printf("%#v\n", a)
-		CasterMessage = a
-	}
-}
-
-func readCasterStatistics(len int, reader *bytes.Reader) {
-	var a CasterStatisticsType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf(" size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if CasterStatistics != a {
-		log.Printf("%#v\n", a)
-		CasterStatistics = a
-	}
-}
-
-func readSwitcherStatus(len int, reader *bytes.Reader) {
-	var a SwitcherStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf("size mismatch %T len=%d\n", a, len)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if SwitcherStatus != a {
-		log.Printf("%#v\n", a)
-		SwitcherStatus = a
-	}
-}
-
-func readAudioMixer(len int, reader *bytes.Reader) {
-	var a AudioMixerStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if AudioMixerStatus != a {
-		log.Printf("%#v\n", a)
-		AudioMixerStatus = a
-	}
-}
-
-func readAudioMixerAll(len int, reader *bytes.Reader) {
-	var a AudioMixerAllStatusType
-	if len != int(unsafe.Sizeof(a)) {
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if AudioMixerAllStatus != a {
-		log.Printf("%#v\n", a)
-		AudioMixerAllStatus = a
-	}
-}
-
-func readAudioPeak(len int, reader *bytes.Reader) {
-	var a [14]uint16
-	if len != int(unsafe.Sizeof(a)) {
-		log.Printf("size mismatch %d %#v\n", len, a)
-		return
-	}
-	err := binary.Read(reader, LE, &a)
-	checkError(err)
-	if AudioPeakStatus != a {
-		log.Printf("AudioPeak %#v\n", a)
-		AudioPeakStatus = a
 	}
 }
 
