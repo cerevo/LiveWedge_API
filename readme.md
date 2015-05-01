@@ -14,6 +14,15 @@ Very simple program just to send recording start/stop command.
 ### wipetest
 Very simple program just to repeat wipe all pattern. No web UI.
 
+### pinptest
+Very simple program of Picture in Picture. No web UI.
+
+### status0
+A sample program for getting status via UDP.
+
+### find0
+A sample program for finding a LiveWedge within the same network.
+
 ## How to build
 
 0. Install go language.
