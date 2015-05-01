@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"libvsw"
+	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -15,13 +17,16 @@ func main() {
 
 	c := vsw.RequestSwitcherStatus()
 	c2 := vsw.RequestAudioPeakStatus()
+	tick := time.Tick(10 * time.Second)
 	for {
-		vsw.HeartBeat()
 		select {
+		case <-tick:
+			vsw.HeartBeat()
+			log.Printf("status0: HeartBeat!\n")
 		case ss := <-c:
-			fmt.Printf("status0: %#v\n", ss)
+			log.Printf("status0: %#v\n", ss)
 		case ss := <-c2:
-			fmt.Printf("status0: %#v\n", ss)
+			log.Printf("status0: %#v\n", ss)
 		}
 	}
 }
