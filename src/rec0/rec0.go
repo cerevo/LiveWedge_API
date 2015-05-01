@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-var vsw libvsw.Vsw
+var vsw *libvsw.Vsw
 
 const f0 string = `<html><body>
 Recording

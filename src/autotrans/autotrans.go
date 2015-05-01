@@ -32,7 +32,7 @@ var defaultParams = Params{
 	UploadStillPicture: false,
 }
 
-func loop(vsw libvsw.Vsw, pa Params, notify chan Params) {
+func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 	index := 0
 	for {
 		select {

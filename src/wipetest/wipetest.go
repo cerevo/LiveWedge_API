@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func wipeTest(vsw libvsw.Vsw, src1, src2 int) {
+func wipeTest(vsw *libvsw.Vsw, src1, src2 int) {
 	log.Printf("wipeTest src1=%d src2=%d\n", src1, src2)
 	vsw.Cut(src1)
 
