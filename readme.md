@@ -27,7 +27,7 @@ Tested in linux/amd64. Go version 1.4. I hope Mac/Windows works, too.
 
 	(cd src/libvsw; go generate; go install)
 
-3. Build sample programs at each directry
+3. Build sample programs at each directory
 
 	(cd src/autotrans; go build)  
 	(cd src/rec0; go build)  
