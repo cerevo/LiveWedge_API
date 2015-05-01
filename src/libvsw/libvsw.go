@@ -36,6 +36,8 @@ type Vsw struct {
 	mac    [8]uint8
 }
 
+var _vsw *Vsw
+
 func (vsw Vsw) FirmwareRevision() int32 {
 	return vsw.rev
 }
@@ -102,11 +104,13 @@ func openTcp(service string) *net.TCPConn {
 	return conn
 }
 
-func NewVsw(service string) Vsw {
-	log.Println("New Vsw for", service)
-	vsw := Vsw{}
-	vsw.conn = openTcp(service)
-	readBasicInfo(&vsw)
-	go monitorStatus(service)
-	return vsw
+func NewVsw(service string) *Vsw {
+	if _vsw == nil {
+		log.Println("New Vsw for", service)
+		_vsw = new(Vsw)
+		_vsw.conn = openTcp(service)
+		readBasicInfo(_vsw)
+		go monitorStatus(service)
+	}
+	return _vsw
 }
