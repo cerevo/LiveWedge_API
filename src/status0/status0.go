@@ -13,7 +13,7 @@ import (
 	"net"
 	"os"
 	"strings"
-	"time"
+	//"time"
 )
 
 const (
@@ -79,6 +79,11 @@ const (
 	AUDIO_MIXER_CATEGORY_MUTE
 	AUDIO_MIXER_CATEGORY_DELAY /* for only LINE */
 )
+
+type SwModeType uint32
+type MountStatusType uint32
+type PreviewModeType uint32
+type DefaultBackgroundColorType uint32
 
 type AudioMixerStatusType struct {
 	Channel, Category uint8
@@ -152,24 +157,6 @@ type CasterStatisticsType struct {
 }
 
 var LE = binary.LittleEndian
-
-var (
-	SwMode                   uint32
-	MountStatus              uint32
-	PreviewMode              uint32
-	DefaultBackgroundColor   uint32
-	SwitcherStatus           SwitcherStatusType
-	ProgramOutStatus         ProgramOutStatusType
-	PreviewOutStatus         PreviewOutStatusType
-	ExternalInputStatus      ExternalInputStatusType
-	FadeToDefaultColorStatus FadeToDefaultColorStatusType
-	RecordingStatus          RecordingStatusType
-	AudioMixerAllStatus      AudioMixerAllStatusType
-	AudioMixerStatus         AudioMixerStatusType
-	AudioPeakStatus          AudioPeakStatusType
-	CasterMessage            CasterMessageType
-	CasterStatistics         CasterStatisticsType
-)
 
 func checkError(err error) {
 	if err != nil {
@@ -268,9 +255,12 @@ func main() {
 	vsw := libvsw.NewVsw(os.Args[1])
 
 	go monitor(os.Args[1])
-	rate := 10
+	c := RequestSwitcherStatus()
+	//rate := 10
 	for {
 		vsw.HeartBeat()
-		time.Sleep(time.Duration(rate) * time.Second)
+		//time.Sleep(time.Duration(rate) * time.Second)
+		ss := <-c
+		fmt.Printf("Got from chan! %v", ss)
 	}
 }
