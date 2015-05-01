@@ -107,5 +107,6 @@ func NewVsw(service string) Vsw {
 	vsw := Vsw{}
 	vsw.conn = openTcp(service)
 	readBasicInfo(&vsw)
+	go monitorStatus(service)
 	return vsw
 }
