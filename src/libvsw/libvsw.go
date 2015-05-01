@@ -31,6 +31,7 @@ const (
 
 type Vsw struct {
 	conn   *net.TCPConn
+	udpConn   *net.UDPConn
 	rev    int32
 	update int32
 	mac    [8]uint8
@@ -110,7 +111,16 @@ func NewVsw(service string) *Vsw {
 		_vsw = new(Vsw)
 		_vsw.conn = openTcp(service)
 		readBasicInfo(_vsw)
-		go monitorStatus(service)
+		_vsw.udpConn = openUdp(service)
+		go monitorStatus(*_vsw)
 	}
 	return _vsw
+}
+
+func (vsw Vsw) Close() {
+	if _vsw != nil {
+		_vsw.conn.Close()
+		_vsw.udpConn.Close()
+		_vsw = nil
+	}
 }

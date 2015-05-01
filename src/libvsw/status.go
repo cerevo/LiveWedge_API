@@ -234,11 +234,10 @@ func readStatus(conn io.Reader) {
 	}
 }
 
-func monitorStatus(service string) {
-	conn := openUdp(service)
+func monitorStatus(vsw Vsw) {
 	cmd := []uint32{33}
-	sendUdp(conn, cmd)
+	sendUdp(vsw.udpConn, cmd)
 	for {
-		readStatus(conn)
+		readStatus(vsw.udpConn)
 	}
 }
