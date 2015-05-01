@@ -25,13 +25,14 @@ Tested in linux/amd64. Go version 1.4. I hope Mac/Windows works, too.
 
 2. Install common library
 
-	(cd src/libvsw; go install)
+	(cd src/libvsw; go generate; go install)
 
-3. Build sample programs
+3. Build sample programs at each directry
 
 	(cd src/autotrans; go build)  
-	(cd src/rec0; go build) 
-	(cd src/wipetest; go build) 
+	(cd src/rec0; go build)  
+	(cd src/wipetest; go build)  
+	...  
 
 
 Or just execute ./make.sh
