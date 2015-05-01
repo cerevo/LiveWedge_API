@@ -44,7 +44,7 @@ func (vsw Vsw) MacAddress() [8]uint8 {
 	return vsw.mac
 }
 
-func (vsw Vsw) HertBeat() {
+func (vsw Vsw) HeartBeat() {
 	buf := []uint32{SW_ID_TCPHeartBeat}
 	send(vsw.conn, buf)
 }

@@ -471,9 +471,9 @@ func main() {
 	vsw := libvsw.NewVsw(os.Args[1])
 
 	go monitor(os.Args[1])
-	rate := 100000
+	rate := 10
 	for {
-		vsw.Cut(1)
+		vsw.HeartBeat()
 		time.Sleep(time.Duration(rate) * time.Second)
 	}
 }
