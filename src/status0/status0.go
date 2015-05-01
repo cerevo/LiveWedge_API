@@ -256,11 +256,16 @@ func main() {
 
 	go monitor(os.Args[1])
 	c := RequestSwitcherStatus()
+	c2 := RequestAudioPeakStatus()
 	//rate := 10
 	for {
 		vsw.HeartBeat()
 		//time.Sleep(time.Duration(rate) * time.Second)
-		ss := <-c
-		fmt.Printf("Got from chan! %v", ss)
+		select {
+		case ss := <-c:
+			fmt.Printf("Got from chan! %v", ss)
+		case ss := <-c2:
+			fmt.Printf("Got from chan! %v", ss)
+		}
 	}
 }
