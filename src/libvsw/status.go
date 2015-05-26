@@ -76,38 +76,57 @@ const (
 	AUDIO_MIXER_CATEGORY_DELAY /* for only LINE */
 )
 
-type SwModeType uint32
-type MountStatusType uint32
-type PreviewModeType uint32
-type DefaultBackgroundColorType uint32
+type SwModeType struct {
+	Cmd uint32
+	SwMode uint32
+}
+type MountStatusType  struct {
+	Cmd uint32
+	MountStatus uint32
+}
+type PreviewModeType struct {
+	Cmd uint32
+	PreviewMode uint32
+}
+type DefaultBackgroundColorType struct {
+	Cmd uint32
+	DefaultBackgroundColor uint32
+}
 
 type AudioMixerStatusType struct {
+	Cmd uint32
 	Channel, Category uint8
 	Value             uint16
 }
 
 type AudioMixerAllStatusType struct {
+	Cmd uint32
 	Pairs       [AUDIO_MIXER_CHANNEL_NUM]struct{ Gain, Volume uint16 }
 	Mute, Delay uint16
 }
 
 type AudioPeakStatusType struct {
+	Cmd uint32
 	Peak [14]uint16
 }
 
 type RecordingStatusType struct {
+	Cmd uint32
 	RecordingTime, RecordRemainTIme uint32
 }
 
 type FadeToDefaultColorStatusType struct {
+	Cmd uint32
 	IsFade, AutoRemainTime uint32
 }
 
 type ExternalInputStatusType struct {
+	Cmd uint32
 	InputType, PlayTiming, IsRepeat uint32
 }
 
 type ProgramOutStatusType struct {
+	Cmd uint32
 	IsConnected   uint32
 	Display       struct{ IsAuto, PixelHight, PixelWidth, Aspect, FrameRate uint32 }
 	IsAudioEnable uint32
@@ -124,6 +143,7 @@ type Rect struct {
 }
 
 type SwitcherStatusType struct {
+	Cmd uint32
 	Param, CmdId                         uint32
 	Main_src, Sub_src, Sub_mode, Padding uint8
 	Trans                                struct {
@@ -142,11 +162,13 @@ type SwitcherStatusType struct {
 }
 
 type CasterMessageType struct {
+	Cmd uint32
 	Category, Message uint8
 	Stuff             [2]uint8
 }
 
 type CasterStatisticsType struct {
+	Cmd uint32
 	Bitrate    uint32
 	Queue      uint16
 	Fps, Stuff uint8
@@ -185,12 +207,12 @@ func readStatus(conn io.Reader) {
 	checkError(err)
 	//log.Printf("len=%d\n", len)
 	reader := bytes.NewReader(buf[:len])
+	reader2 := bytes.NewReader(buf[:4])
 	var cmd uint32
-	err = binary.Read(reader, LE, &cmd)
+	err = binary.Read(reader2, LE, &cmd)
 	checkError(err)
 
 	//log.Printf("cmd=%d\n", cmd)
-	len -= 4
 	switch cmd {
 	case SW_STATE_ID_StateMode:
 		readSwMode(len, reader)
@@ -223,7 +245,7 @@ func readStatus(conn io.Reader) {
 	case SW_ID_CasterStatistics:
 		readCasterStatistics(len, reader)
 	default:
-		log.Printf("cmd=%d len=%d\n", cmd, len+4)
+		log.Printf("cmd=%d len=%d\n", cmd, len)
 		for len > 0 {
 			err = binary.Read(reader, LE, &cmd)
 			checkError(err)
