@@ -174,6 +174,12 @@ type CasterStatisticsType struct {
 	Fps, Stuff uint8
 }
 
+type RecordingResultType struct {
+	Cmd uint32
+	IsStateRecording uint32
+	RecordingResult uint32
+}
+
 // var LE = binary.LittleEndian
 
 // func checkError(err error) {
@@ -244,6 +250,9 @@ func readStatus(conn io.Reader) {
 		readCasterMessage(len, reader)
 	case SW_ID_CasterStatistics:
 		readCasterStatistics(len, reader)
+	case SW_ID_RecordingResult:
+		readRecordingResult(len, reader)
+		RecordingResult.RecordingResult = 0
 	default:
 		log.Printf("cmd=%d len=%d\n", cmd, len)
 		for len > 0 {

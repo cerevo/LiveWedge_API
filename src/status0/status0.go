@@ -17,6 +17,7 @@ func main() {
 
 	c := vsw.RequestSwitcherStatus()
 	c2 := vsw.RequestAudioPeakStatus()
+	c3 := vsw.RequestRecordingResult()
 	tick := time.Tick(10 * time.Second)
 	for {
 		select {
@@ -26,6 +27,8 @@ func main() {
 		case ss := <-c:
 			log.Printf("status0: %#v\n", ss)
 		case ss := <-c2:
+			log.Printf("status0: %#v\n", ss)
+		case ss := <-c3:
 			log.Printf("status0: %#v\n", ss)
 		}
 	}

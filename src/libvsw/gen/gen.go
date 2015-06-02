@@ -66,6 +66,7 @@ func main() {
 		"AudioMixerStatus",
 		"AudioMixerAllStatus",
 		"AudioPeakStatus",
+		"RecordingResult",
 	}
 
 	file, err := os.Create("a.go")
