@@ -50,6 +50,18 @@ func (vsw Vsw) MacAddress() [8]uint8 {
 func (vsw Vsw) HeartBeat() {
 	buf := []uint32{SW_ID_TCPHeartBeat}
 	send(vsw.conn, buf)
+
+	var len int32
+	err := binary.Read(vsw.conn, LE, &len)
+	checkError(err)
+	//fmt.Printf("len=%d\n", len)
+	if len != 4 {
+		fmt.Fprintf(os.Stderr, "libvsw: Fatal error. len != 4\n")
+	}
+	var cmd uint32
+	err = binary.Read(vsw.conn, LE, &cmd)
+	checkError(err)
+	//fmt.Printf("cmd=%x\n", cmd)
 }
 
 func checkError(err error) {
