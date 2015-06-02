@@ -14,7 +14,7 @@ func readRecordingState(conn io.Reader) (state, result uint32) {
 	checkError(err)
 	//fmt.Printf("len=%d\n", len)
 	if len != 12 {
-		fmt.Fprintf(os.Stderr, "libvsw: Fatal error \n")
+		fmt.Fprintf(os.Stderr, "libvsw: Fatal error. len != 12 \n")
 	}
 
 	var cmd uint32
@@ -22,7 +22,7 @@ func readRecordingState(conn io.Reader) (state, result uint32) {
 	checkError(err)
 	//fmt.Printf("cmd=%x\n", cmd)
 	if cmd != SW_ID_RecordingResult {
-		fmt.Fprintf(os.Stderr, "libvsw: Fatal error \n")
+		fmt.Fprintf(os.Stderr, "libvsw: Fatal error. cmd != SW_ID_RecrodingResult \n")
 	}
 	err = binary.Read(conn, LE, &state)
 	checkError(err)
