@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"unsafe"
 )
 
 func readRecordingState(conn io.Reader) (state, result uint32) {
@@ -31,11 +32,29 @@ func readRecordingState(conn io.Reader) (state, result uint32) {
 	return state, result
 }
 
+func readLiveBroadcastResult(conn io.Reader) {
+	var a LiveBroadcastResultType
+	var len int32
+	err := binary.Read(conn, LE, &len)
+	checkError(err)
+	//fmt.Printf("len=%d\n", len)
+
+	if len != int32(unsafe.Sizeof(a)) {
+		log.Printf(" size mismatch %T len=%d\n", a, len)
+		return
+	}
+	err = binary.Read(conn, LE, &a)
+	checkError(err)
+	//log.Printf("%#v\n", a)
+}
+
+
 func (vsw Vsw) ChangeLiveBroadcastState(mode int) {
 	if mode != 0 && mode != 1 {
 		return
 	}
 	sendKeyValue(vsw.conn, SW_ID_ChangeLiveBroadcastState, mode)
+	readLiveBroadcastResult(vsw.conn)
 }
 
 func (vsw Vsw) ChangeRecordingState(mode int) {

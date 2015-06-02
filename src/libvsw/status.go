@@ -77,56 +77,56 @@ const (
 )
 
 type SwModeType struct {
-	Cmd uint32
+	Cmd    uint32
 	SwMode uint32
 }
-type MountStatusType  struct {
-	Cmd uint32
+type MountStatusType struct {
+	Cmd         uint32
 	MountStatus uint32
 }
 type PreviewModeType struct {
-	Cmd uint32
+	Cmd         uint32
 	PreviewMode uint32
 }
 type DefaultBackgroundColorType struct {
-	Cmd uint32
+	Cmd                    uint32
 	DefaultBackgroundColor uint32
 }
 
 type AudioMixerStatusType struct {
-	Cmd uint32
+	Cmd               uint32
 	Channel, Category uint8
 	Value             uint16
 }
 
 type AudioMixerAllStatusType struct {
-	Cmd uint32
+	Cmd         uint32
 	Pairs       [AUDIO_MIXER_CHANNEL_NUM]struct{ Gain, Volume uint16 }
 	Mute, Delay uint16
 }
 
 type AudioPeakStatusType struct {
-	Cmd uint32
+	Cmd  uint32
 	Peak [14]uint16
 }
 
 type RecordingStatusType struct {
-	Cmd uint32
+	Cmd                             uint32
 	RecordingTime, RecordRemainTIme uint32
 }
 
 type FadeToDefaultColorStatusType struct {
-	Cmd uint32
+	Cmd                    uint32
 	IsFade, AutoRemainTime uint32
 }
 
 type ExternalInputStatusType struct {
-	Cmd uint32
+	Cmd                             uint32
 	InputType, PlayTiming, IsRepeat uint32
 }
 
 type ProgramOutStatusType struct {
-	Cmd uint32
+	Cmd           uint32
 	IsConnected   uint32
 	Display       struct{ IsAuto, PixelHight, PixelWidth, Aspect, FrameRate uint32 }
 	IsAudioEnable uint32
@@ -143,7 +143,7 @@ type Rect struct {
 }
 
 type SwitcherStatusType struct {
-	Cmd uint32
+	Cmd                                  uint32
 	Param, CmdId                         uint32
 	Main_src, Sub_src, Sub_mode, Padding uint8
 	Trans                                struct {
@@ -162,22 +162,30 @@ type SwitcherStatusType struct {
 }
 
 type CasterMessageType struct {
-	Cmd uint32
+	Cmd               uint32
 	Category, Message uint8
 	Stuff             [2]uint8
 }
 
 type CasterStatisticsType struct {
-	Cmd uint32
+	Cmd        uint32
 	Bitrate    uint32
 	Queue      uint16
 	Fps, Stuff uint8
 }
 
 type RecordingResultType struct {
-	Cmd uint32
+	Cmd              uint32
 	IsStateRecording uint32
-	RecordingResult uint32
+	RecordingResult  uint32
+}
+
+type LiveBroadcastResultType struct {
+	Cmd                 uint32
+	DeviceId            [23]uint8
+	Stuff               [1]uint8
+	IsStateOnline       uint32
+	LiveBroadcastResult uint32
 }
 
 // var LE = binary.LittleEndian
