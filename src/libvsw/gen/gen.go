@@ -67,6 +67,10 @@ func main() {
 		"AudioMixerAllStatus",
 		"AudioPeakStatus",
 		"RecordingResult",
+		//"LiveBroadcastResult",
+		"SubMode",
+		"PinpGeometry",
+		"PinpBorder",
 	}
 
 	file, err := os.Create("a.go")

@@ -21,6 +21,7 @@ const (
 	SW_ID_TCPHeartBeat             = 0x23
 	SW_ID_RecordingResult          = 0x25
 	SW_ID_SetPinpGeometry          = 0x3d
+	SW_ID_SetPinpBorder            = 0x3e
 	SW_ID_SetSubMode               = 0x40
 )
 
@@ -30,11 +31,11 @@ const (
 //const SW_ID_GetTimeAndZone = 0x4b
 
 type Vsw struct {
-	conn   *net.TCPConn
-	udpConn   *net.UDPConn
-	rev    int32
-	update int32
-	mac    [8]uint8
+	conn    *net.TCPConn
+	udpConn *net.UDPConn
+	rev     int32
+	update  int32
+	mac     [8]uint8
 }
 
 var _vsw *Vsw

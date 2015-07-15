@@ -26,9 +26,14 @@ const (
 	SW_STATUS_ID_AudioPeak                  = 114
 	SW_STATUS_ID_VideoSwitcher              = 115
 	SW_STATUS_ID_VideoSwitcherAuto          = 116
-	SW_ID_MountNotify                       = 79
-	SW_ID_CasterMessage                     = 85
-	SW_ID_CasterStatistics                  = 86
+	SW_STATUS_ID_SetPinpGeometry            = 117
+	SW_STATUS_ID_SetPinpBorder              = 118
+	SW_STATUS_ID_SetChromaRange             = 119
+	SW_STATUS_ID_SetSubMode                 = 120
+
+	SW_ID_MountNotify      = 79
+	SW_ID_CasterMessage    = 85
+	SW_ID_CasterStatistics = 86
 )
 
 // SwMode
@@ -188,6 +193,29 @@ type LiveBroadcastResultType struct {
 	LiveBroadcastResult uint32
 }
 
+type SubModeType struct {
+	Cmd  uint32
+	Mode uint32
+}
+
+type PinpGeometryType struct {
+	Cmd     uint32
+	Scale_x uint32
+	Scale_y uint32
+	Scale_w uint32
+	Scale_h uint32
+	Crop_x  uint32
+	Crop_y  uint32
+	Crop_w  uint32
+	Crop_h  uint32
+}
+
+type PinpBorderType struct {
+	Cmd   uint32
+	Color uint32
+	Width uint32
+}
+
 // var LE = binary.LittleEndian
 
 // func checkError(err error) {
@@ -261,8 +289,14 @@ func readStatus(conn io.Reader) {
 	case SW_ID_RecordingResult:
 		readRecordingResult(len, reader)
 		RecordingResult.RecordingResult = 0
+	case SW_STATUS_ID_SetSubMode:
+		readSubMode(len, reader)
+	case SW_STATUS_ID_SetPinpGeometry:
+		readPinpGeometry(len, reader)
+	case SW_STATUS_ID_SetPinpBorder:
+		readPinpBorder(len, reader)
 	default:
-		log.Printf("cmd=%d len=%d\n", cmd, len)
+		log.Printf("readStatus: cmd=%d len=%d\n", cmd, len)
 		for len > 0 {
 			err = binary.Read(reader, LE, &cmd)
 			checkError(err)
