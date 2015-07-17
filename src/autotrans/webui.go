@@ -2,98 +2,127 @@ package main
 
 import (
 	"fmt"
-	"libvsw"
+	"html/template"
 	"net/http"
 	"os"
 	"strconv"
 )
 
-const f0 string = `<html><head>
+const htmlPage string = `
+<html><head>
 </head><body>
 <h1>Auto transition</h1>
-<h3>Current Setting:</h3>
-`
-const f1 string = `
-<hr/>
 <form method="post" action="/">
   <p>Input:<br/>
-  <input type="checkbox" name="r" value="1" /> 1
-  <input type="checkbox" name="r" value="2" /> 2
-  <input type="checkbox" name="r" value="3" /> 3
-  <input type="checkbox" name="r" value="4" /> 4</p>
+  <input type="checkbox" name="r" value="1" {{if .Input1}}checked="checked"{{end}} /> 1
+  <input type="checkbox" name="r" value="2" {{if .Input2}}checked="checked"{{end}} /> 2
+  <input type="checkbox" name="r" value="3" {{if .Input3}}checked="checked"{{end}} /> 3
+  <input type="checkbox" name="r" value="4" {{if .Input4}}checked="checked"{{end}} /> 4</p>
   <p>Transition mode:<br/>
-  <select name="trans">
-    <option value="0"></option>
-    <option value="0">Cut</option>
-    <option value="1">Mix</option>
-    <option value="2">Dip to 1</option>
-    <option value="258">Dip to 2</option>
-    <option value="514">Dip to 3</option>
-    <option value="770">Dip to 4</option>
-
-    <option value="3">Wipe (horizontal)</option>
-    <option value="4">Wipe (horizontal_r)</option>
-    <option value="5">Wipe (vertical)</option>
-    <option value="6">Wipe (vertical_r)</option>
-    <option value="7">Wipe (horizontal_slide)</option>
-    <option value="8">Wipe (horizontal_slide_r)</option>
-    <option value="9">Wipe (vertical_slide)</option>
-    <option value="10">Wipe (vertical_slide_r)</option>
-    <option value="11">Wipe (horizontal_double_slide)</option>
-    <option value="12">Wipe (horizontal_double_slide_r)</option>
-    <option value="13">Wipe (vertical_double_slide)</option>
-    <option value="14">Wipe (vertical_double_slide_r)</option>
-    <option value="15">Wipe (square_top_left)</option>
-    <option value="16">Wipe (square_top_left_r)</option>
-    <option value="17">Wipe (square_top)</option>
-    <option value="18">Wipe (square_top_r)</option>
-    <option value="19">Wipe (square_top_right)</option>
-    <option value="20">Wipe (square_top_right_r)</option>
-    <option value="21">Wipe (square_center_left)</option>
-    <option value="22">Wipe (square_center_left_r)</option>
-    <option value="23">Wipe (square_center)</option>
-    <option value="24">Wipe (square_center_r)</option>
-    <option value="25">Wipe (square_center_right)</option>
-    <option value="26">Wipe (square_center_right_r)</option>
-    <option value="27">Wipe (square_bottom_left)</option>
-    <option value="28">Wipe (square_bottom_left_r)</option>
-    <option value="29">Wipe (square_bottom)</option>
-    <option value="30">Wipe (square_bottom_r)</option>
-    <option value="31">Wipe (square_bottom_right)</option>
-    <option value="32">Wipe (square_bottom_right_r)</option>
-
-  </select> rate <select name="rate">
-    <option value="5000"></option>
-    <option value="1000">1 sec</option>
-    <option value="2000">2 sec</option>
-    <option value="3000">3 sec</option>
-    <option value="4000">4 sec</option>
-    <option value="5000">5 sec</option>
-    <option value="6000">6 sec</option>
-    <option value="10000">10 sec</option>
-  </select></p>
+  {{select .Trans}} rate {{select .Rate}}</p>
   <p>Interval:<br/>
-  <select name="interval">
-    <option value="30"></option>
-    <option value="10">10 sec</option>
-    <option value="30">30 sec</option>
-    <option value="60">1 min</option>
-    <option value="180">3 min</option>
-    <option value="600">10 min</option>
-    <option value="1200">20 min</option>
-  </select></p>
+  {{select .Interval}}</p>
   <p>Boot time options:<br/>
-  <input type="checkbox" name="broadcast" value="true" /> Start live broadcasting<br/>
- <input type="checkbox" name="upload" value="true" /> Upload a still picture and use it as input4<br/>
+  <input type="checkbox" name="broadcast" value="true" {{if .StartLiveBroadcast}}checked="checked"{{end}} /> Start live broadcasting<br/>
+ <input type="checkbox" name="upload" value="true" {{if .UploadStillPicture}}checked="checked"{{end}}/> Upload a still picture and use it as input4<br/>
   <input type="submit" name="send" value="send" />
   <div align="right"><input type="submit" name="quit" value="quit" /></div>
-</form>
-</body></html>`
+</form></body></html>`
+
+type tmplParams struct {
+	Interval           *forHTMLSelect
+	Trans              *forHTMLSelect
+	Rate               *forHTMLSelect
+	StartLiveBroadcast bool
+	UploadStillPicture bool
+	Input1             bool
+	Input2             bool
+	Input3             bool
+	Input4             bool
+}
+
+type selectItem struct {
+	val int
+	str string
+}
+
+type forHTMLSelect struct {
+	Name     string
+	Options  []selectItem
+	Selected int
+}
 
 var (
 	params Params
 	notify chan Params
 )
+
+var tp = tmplParams{
+	Interval: &forHTMLSelect{
+		Name: "interval",
+		Options: []selectItem{
+			selectItem{10, "10 sec"},
+			selectItem{30, "30 sec"},
+			selectItem{60, "1 min"},
+			selectItem{180, "3 min"},
+			selectItem{600, "5 min"},
+			selectItem{1200, "20 min"},
+		},
+	},
+	Trans: &forHTMLSelect{
+		Name: "trans",
+		Options: []selectItem{
+			selectItem{0, "Cut"},
+			selectItem{1, "Mix"},
+			selectItem{2, "Dip to 1"},
+			selectItem{258, "Dip to 2"},
+			selectItem{514, "Dip to 3"},
+			selectItem{770, "Dip to 4"},
+			selectItem{3, "Wipe (horizontal)"},
+			selectItem{4, "Wipe (horizontal_r)"},
+			selectItem{5, "Wipe (vertical)"},
+			selectItem{6, "Wipe (vertical_r)"},
+			selectItem{7, "Wipe (horizontal_slide)"},
+			selectItem{8, "Wipe (horizontal_slide_r)"},
+			selectItem{9, "Wipe (vertical_slide)"},
+			selectItem{10, "Wipe (vertical_slide_r)"},
+			selectItem{11, "Wipe (horizontal_double_slide)"},
+			selectItem{12, "Wipe (horizontal_double_slide_r)"},
+			selectItem{13, "Wipe (vertical_double_slide)"},
+			selectItem{14, "Wipe (vertical_double_slide_r)"},
+			selectItem{15, "Wipe (square_top_left)"},
+			selectItem{16, "Wipe (square_top_left_r)"},
+			selectItem{17, "Wipe (square_top)"},
+			selectItem{18, "Wipe (square_top_r)"},
+			selectItem{19, "Wipe (square_top_right)"},
+			selectItem{20, "Wipe (square_top_right_r)"},
+			selectItem{21, "Wipe (square_center_left)"},
+			selectItem{22, "Wipe (square_center_left_r)"},
+			selectItem{23, "Wipe (square_center)"},
+			selectItem{24, "Wipe (square_center_r)"},
+			selectItem{25, "Wipe (square_center_right)"},
+			selectItem{26, "Wipe (square_center_right_r)"},
+			selectItem{27, "Wipe (square_bottom_left)"},
+			selectItem{28, "Wipe (square_bottom_left_r)"},
+			selectItem{29, "Wipe (square_bottom)"},
+			selectItem{30, "Wipe (square_bottom_r)"},
+			selectItem{31, "Wipe (square_bottom_right)"},
+			selectItem{32, "Wipe (square_bottom_right_r)"},
+		},
+	},
+	Rate: &forHTMLSelect{
+		Name: "rate",
+		Options: []selectItem{
+			selectItem{1000, "1 sec"},
+			selectItem{2000, "2 sec"},
+			selectItem{3000, "3 sec"},
+			selectItem{4000, "4 sec"},
+			selectItem{5000, "5 sec"},
+			selectItem{6000, "6 sec"},
+			selectItem{10000, "10 sec"},
+		},
+	},
+}
 
 func form(r *http.Request) {
 	if r.FormValue("quit") == "quit" {
@@ -121,37 +150,40 @@ func form(r *http.Request) {
 	params.StartLiveBroadcast = (r.FormValue("broadcast") == "true")
 	params.UploadStillPicture = (r.FormValue("upload") == "true")
 	notify <- params
-
 }
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		form(r)
 	}
-	fmt.Fprint(w, f0)
-	for i, v := range params.Input {
-		if v {
-			fmt.Fprintf(w, "input[%d] = ON</br>", i+1)
-		} else {
-			fmt.Fprintf(w, "input[%d] = OFF</br>", i+1)
-		}
-	}
-	fmt.Fprintf(w, "transition mode: ")
-	switch params.Trans & 0xff {
-	case 0:
-		fmt.Fprintf(w, "cut<br/>")
-	case 1:
-		fmt.Fprintf(w, "mix, rate: %d msec<br/>", params.Rate)
-	case 2:
-		fmt.Fprintf(w, "dip to %d, rate: %d msec<br/>", ((params.Trans>>8)&3)+1, params.Rate)
-	default:
-		fmt.Fprintf(w, "wipe (%s), rate: %d msec<br/>", libvsw.WipeStr[(params.Trans&0xff)-3], params.Rate)
-	}
-	fmt.Fprintf(w, "interval: %d sec<br/>", params.Interval)
-	fmt.Fprintf(w, "<br/>Boot time options:<br/>")
-	fmt.Fprintf(w, "  Start live broadcasting: %t<br/>", params.StartLiveBroadcast)
-	fmt.Fprintf(w, "  Upload a still picture and use it as input4: %t<br/>", params.UploadStillPicture)
 
-	fmt.Fprint(w, f1)
+	funcMap := template.FuncMap{
+		"select": func(sel *forHTMLSelect) template.HTML {
+			h := fmt.Sprintf(`<select name="%s">`, sel.Name)
+			for _, v := range sel.Options {
+				var s string
+				if v.val == sel.Selected {
+					s = " selected"
+				}
+				h += fmt.Sprintf(`<option value="%d"%s>%s</option>`, v.val, s, v.str)
+			}
+			h += "</select>"
+			return template.HTML(h)
+		},
+	}
+
+	tp.Interval.Selected = params.Interval
+	tp.Trans.Selected = params.Trans
+	tp.Rate.Selected = params.Rate
+	tp.StartLiveBroadcast = params.StartLiveBroadcast
+	tp.UploadStillPicture = params.UploadStillPicture
+	tp.Input1 = params.Input[0]
+	tp.Input2 = params.Input[1]
+	tp.Input3 = params.Input[2]
+	tp.Input4 = params.Input[3]
+
+	tmpl, _ := template.New("autotrans").Funcs(funcMap).Parse(htmlPage)
+	tmpl.Execute(w, tp)
 }
 
 func WebUI(pa Params, nt chan Params) {
