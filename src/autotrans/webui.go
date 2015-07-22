@@ -24,7 +24,8 @@ const htmlPage string = `
   {{select .Interval}}</p>
   <p>Boot time options:<br/>
   <input type="checkbox" name="broadcast" value="true" {{if .StartLiveBroadcast}}checked="checked"{{end}} /> Start live broadcasting<br/>
- <input type="checkbox" name="upload" value="true" {{if .UploadStillPicture}}checked="checked"{{end}}/> Upload a still picture and use it as input4<br/>
+  <input type="checkbox" name="upload" value="true" {{if .UploadStillPicture}}checked="checked"{{end}}/> Upload a still picture and use it as input4<br/>
+  <input type="text" name="picture_url" size="40" value="{{.PictureUrl}}" /><br/>
   <input type="submit" name="send" value="send" />
   <div align="right"><input type="submit" name="quit" value="quit" /></div>
 </form></body></html>`
@@ -35,6 +36,7 @@ type tmplParams struct {
 	Rate               *forHTMLSelect
 	StartLiveBroadcast bool
 	UploadStillPicture bool
+	PictureUrl string
 	Input1             bool
 	Input2             bool
 	Input3             bool
@@ -156,6 +158,7 @@ func form(r *http.Request) {
 	params.Rate = int(rate)
 	params.StartLiveBroadcast = (r.FormValue("broadcast") == "true")
 	params.UploadStillPicture = (r.FormValue("upload") == "true")
+	params.PictureUrl = r.FormValue("picture_url")
 	notify <- params
 }
 
@@ -184,6 +187,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	tp.Rate.Selected = params.Rate
 	tp.StartLiveBroadcast = params.StartLiveBroadcast
 	tp.UploadStillPicture = params.UploadStillPicture
+	tp.PictureUrl = params.PictureUrl
 	tp.Input1 = params.Input[0]
 	tp.Input2 = params.Input[1]
 	tp.Input3 = params.Input[2]
