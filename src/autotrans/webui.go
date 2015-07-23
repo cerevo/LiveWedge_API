@@ -57,6 +57,7 @@ type forHTMLSelect struct {
 var (
 	params Params
 	notify chan Params
+	template0 *template.Template
 )
 
 var tp = tmplParams{
@@ -167,6 +168,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		form(r)
 	}
 
+	tp.Interval.Selected = params.Interval
+	tp.Trans.Selected = params.Trans
+	tp.Rate.Selected = params.Rate
+	tp.StartLiveBroadcast = params.StartLiveBroadcast
+	tp.UploadStillPicture = params.UploadStillPicture
+	tp.PictureUrl = params.PictureUrl
+	tp.Input1 = params.Input[0]
+	tp.Input2 = params.Input[1]
+	tp.Input3 = params.Input[2]
+	tp.Input4 = params.Input[3]
+
+	template0.Execute(w, tp)
+}
+
+func WebUI(pa Params, nt chan Params) {
+	params = pa
+	notify = nt
+
 	funcMap := template.FuncMap{
 		"select": func(sel *forHTMLSelect) template.HTML {
 			h := fmt.Sprintf(`<select name="%s">`, sel.Name)
@@ -181,25 +200,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			return template.HTML(h)
 		},
 	}
+	template0 = template.Must(template.New("autotrans").Funcs(funcMap).Parse(htmlPage))
 
-	tp.Interval.Selected = params.Interval
-	tp.Trans.Selected = params.Trans
-	tp.Rate.Selected = params.Rate
-	tp.StartLiveBroadcast = params.StartLiveBroadcast
-	tp.UploadStillPicture = params.UploadStillPicture
-	tp.PictureUrl = params.PictureUrl
-	tp.Input1 = params.Input[0]
-	tp.Input2 = params.Input[1]
-	tp.Input3 = params.Input[2]
-	tp.Input4 = params.Input[3]
-
-	tmpl, _ := template.New("autotrans").Funcs(funcMap).Parse(htmlPage)
-	tmpl.Execute(w, tp)
-}
-
-func WebUI(pa Params, nt chan Params) {
-	params = pa
-	notify = nt
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
