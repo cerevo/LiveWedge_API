@@ -76,6 +76,7 @@ var tp = tmplParams{
 	Trans: &forHTMLSelect{
 		Name: "trans",
 		Options: []selectItem{
+			selectItem{255, "Wipe (random)"},
 			selectItem{0, "Cut"},
 			selectItem{1, "Mix"},
 			selectItem{2, "Dip to 1"},

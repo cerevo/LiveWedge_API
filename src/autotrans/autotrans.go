@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"math/rand"
 )
 
 const PARAM_VERSION = 5
@@ -34,6 +35,11 @@ var defaultParams = Params{
 	StartLiveBroadcast: false,
 	UploadStillPicture: false,
 	PictureUrl: "",
+}
+
+func random(min, max int) int {
+    rand.Seed(time.Now().Unix())
+    return rand.Intn(max - min) + min
 }
 
 func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
@@ -73,6 +79,8 @@ func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 			vsw.Mix(pa.Rate, index+1)
 		case 2:
 			vsw.Dip(pa.Rate, index+1, ((pa.Trans>>8)&3)+1)
+		case 255:
+			vsw.Wipe(pa.Rate, index+1, random(0, libvsw.WIPE_TYPE_NUM - 1))
 		default:
 			vsw.Wipe(pa.Rate, index+1, pa.Trans-libvsw.TRANSITION_TYPE_WIPE)
 		}
