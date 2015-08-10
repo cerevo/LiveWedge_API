@@ -1,5 +1,6 @@
 package libvsw
 
+// WipeStr is string array holds wipe type names.
 var WipeStr []string = []string{
 	"horizontal",
 	"horizontal_r",

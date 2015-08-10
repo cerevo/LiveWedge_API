@@ -48,7 +48,10 @@ func readLiveBroadcastResult(conn io.Reader) {
 	//log.Printf("%#v\n", a)
 }
 
-
+// ChangeLiveBroadcastState
+//
+// mode: 0 stop broadcasting
+//       1 start broadcasting
 func (vsw Vsw) ChangeLiveBroadcastState(mode int) {
 	if mode != 0 && mode != 1 {
 		return
@@ -57,6 +60,10 @@ func (vsw Vsw) ChangeLiveBroadcastState(mode int) {
 	readLiveBroadcastResult(vsw.conn)
 }
 
+// ChangeRecordingState
+//
+// mode: 0 stop recording
+//       1 start recording
 func (vsw Vsw) ChangeRecordingState(mode int) {
 	if mode != 0 && mode != 1 {
 		return

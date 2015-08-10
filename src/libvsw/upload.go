@@ -12,6 +12,9 @@ type uploadFile0 struct {
 	filename      [1024]byte
 }
 
+// UploadFile upload the specified file to the LiveWedge.
+//
+// The file have to be JPEG image file sized 1280 x 720.
 func (vsw Vsw) UploadFile(filename string) {
 	data, err := ioutil.ReadFile(filename)
 	checkError(err)

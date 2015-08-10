@@ -118,6 +118,7 @@ func openTcp(service string) *net.TCPConn {
 	return conn
 }
 
+// NewVsw creates a new Vsw instance
 func NewVsw(service string) *Vsw {
 	if _vsw == nil {
 		log.Println("New Vsw for", service)
@@ -130,6 +131,9 @@ func NewVsw(service string) *Vsw {
 	return _vsw
 }
 
+// Close the Vsw instance.
+//
+// Close TCP and UDP internal connections.
 func (vsw Vsw) Close() {
 	if _vsw != nil {
 		_vsw.conn.Close()
