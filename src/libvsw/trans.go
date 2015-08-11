@@ -128,7 +128,7 @@ func transUs(conn *net.TCPConn, param int, src int, src2 int, effect int, dip in
 // Cut changes the main screen to the specified src immediately.
 func (vsw Vsw) Cut(src int) {
 	//log.Printf("cut(%d)\n", src)
-	if src < 1 || 4 < src {
+	if src < 0 || 4 < src {
 		return
 	}
 	transMain(vsw.conn, 1, src, TRANSITION_TYPE_CUT, 0, 0)
@@ -137,7 +137,7 @@ func (vsw Vsw) Cut(src int) {
 // CutSub changes the sub screen to the specified src immediately.
 func (vsw Vsw) CutSub(src int) {
 	//log.Printf("cutSub(%d)\n", src)
-	if src < 1 || 4 < src {
+	if src < 0 || 4 < src {
 		return
 	}
 	transSub(vsw.conn, 1, src, TRANSITION_TYPE_CUT, 0, 0)
@@ -146,10 +146,10 @@ func (vsw Vsw) CutSub(src int) {
 // CutUs changes both main and sub screen immediately.
 func (vsw Vsw) CutUs(src int, src2 int) {
 	//log.Printf("cutUs(%d,%d)\n", src, src2)
-	if src < 1 || 4 < src {
+	if src < 0 || 4 < src {
 		return
 	}
-	if src2 < 1 || 4 < src2 {
+	if src2 < 0 || 4 < src2 {
 		return
 	}
 	if src == src2 {
@@ -163,7 +163,7 @@ func (vsw Vsw) CutUs(src int, src2 int) {
 // 
 func (vsw Vsw) Mix(param int, src int) {
 	//log.Printf("mix(%d, %d)\n", param, src)
-	if src < 1 || 4 < src {
+	if src < 0 || 4 < src {
 		return
 	}
 	transMain(vsw.conn, param, src, TRANSITION_TYPE_MIX, 0, 0)
@@ -172,7 +172,7 @@ func (vsw Vsw) Mix(param int, src int) {
 // Dip transits the main screen to the specified src through dip_src in the specified duration.
 func (vsw Vsw) Dip(param int, src int, dip_src int) {
 	//log.Printf("dip(%d, %d, %d)\n", param, src, dip_src)
-	if src < 1 || 4 < src {
+	if src < 0 || 4 < src {
 		return
 	}
 	transMain(vsw.conn, param, src, TRANSITION_TYPE_DIP, dip_src, 0)
@@ -181,7 +181,7 @@ func (vsw Vsw) Dip(param int, src int, dip_src int) {
 // Wipe transits the main screen to the specified src in the specified duration, using the specified wipe_type.
 func (vsw Vsw) Wipe(param int, src int, wipe_type int) {
 	//log.Printf("wipe(%d, %d, %d)\n", param, src, wipe_type)
-	if src < 1 || 4 < src {
+	if src < 0 || 4 < src {
 		return
 	}
 	if wipe_type < 0 || wipe_type >= WIPE_TYPE_NUM {
