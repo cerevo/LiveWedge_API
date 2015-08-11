@@ -24,6 +24,7 @@ var (
 	_%[1]sChan chan %[1]sType
 )
 
+// Request%[1]s gets chan for beging notifyed %[1]s changed.
 func (vsw Vsw) Request%[1]s() <-chan %[1]sType {
 	if _%[1]sChan == nil {
 		_%[1]sChan = make(chan %[1]sType)

@@ -1,3 +1,15 @@
+// Package libvsw provides basic operations for the video switcher, "LiveWedge".
+//
+// This is still alpha version. Compatiblity may break in future update.
+//
+// Currently supported operations:
+//   Screen transfer: Cut, Mix, Wipe
+//   Sub screen control: PinP
+//   Start and stop recording and broadcasting
+//   Upload a still picture and use it as ch.4 input source
+//
+// Getting status from LiveWedge is still under construction.
+// func (vsw Vsw) Request* are not yet documented.
 package libvsw
 
 import (
@@ -23,13 +35,13 @@ const (
 	SW_ID_SetPinpGeometry          = 0x3d
 	SW_ID_SetPinpBorder            = 0x3e
 	SW_ID_SetSubMode               = 0x40
+	SW_ID_SetTimezone              = 0x48
+	SW_ID_SetTime                  = 0x49
+	SW_ID_SetTimeAndZone           = 0x4a
+	SW_ID_GetTimeAndZone           = 0x4b
 )
 
-//const SW_ID_SetTimezone = 0x48
-//const SW_ID_SetTime = 0x49
-//const SW_ID_SetTimeAndZone = 0x4a
-//const SW_ID_GetTimeAndZone = 0x4b
-
+// Vsw holds internal connection state.
 type Vsw struct {
 	conn    *net.TCPConn
 	udpConn *net.UDPConn
@@ -40,14 +52,17 @@ type Vsw struct {
 
 var _vsw *Vsw
 
+// Get firmware revision of LiveWedge
 func (vsw Vsw) FirmwareRevision() int32 {
 	return vsw.rev
 }
 
+// Get MAC address of LiveWedge
 func (vsw Vsw) MacAddress() [8]uint8 {
 	return vsw.mac
 }
 
+// Send heart beat to keep connection
 func (vsw Vsw) HeartBeat() {
 	buf := []uint32{SW_ID_TCPHeartBeat}
 	send(vsw.conn, buf)
@@ -119,6 +134,8 @@ func openTcp(service string) *net.TCPConn {
 }
 
 // NewVsw creates a new Vsw instance
+//
+// service: ip address or hostname of LiveWedge
 func NewVsw(service string) *Vsw {
 	if _vsw == nil {
 		log.Println("New Vsw for", service)

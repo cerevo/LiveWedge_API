@@ -12,6 +12,7 @@ import (
 	"strings"
 )
 
+// ID for each status
 const (
 	SW_STATE_ID_StateMode                   = 100
 	SW_STATE_ID_StateRecording              = 103
@@ -63,6 +64,7 @@ const (
 	SW_MOUNT_REQ_READWRITE = SW_MOUNT_READWRITE
 )
 
+// Audo mixer input
 const (
 	AUDIO_MIXER_CHANNEL_MASTER = iota
 	AUDIO_MIXER_CHANNEL_INPUT1
@@ -74,6 +76,7 @@ const (
 	AUDIO_MIXER_CHANNEL_NUM
 )
 
+// Audio mixer category
 const (
 	AUDIO_MIXER_CATEGORY_GAIN = iota /* Master has no gain */
 	AUDIO_MIXER_CATEGORY_VOLUME
@@ -215,15 +218,6 @@ type PinpBorderType struct {
 	Color uint32
 	Width uint32
 }
-
-// var LE = binary.LittleEndian
-
-// func checkError(err error) {
-// 	if err != nil {
-// 		fmt.Fprintf(os.Stderr, "libvsw: Fatal error: %s", err.Error())
-// 		os.Exit(1)
-// 	}
-// }
 
 func sendUdp(conn io.Writer, data []uint32) {
 	err := binary.Write(conn, LE, data)
