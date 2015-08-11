@@ -219,6 +219,12 @@ type PinpBorderType struct {
 	Width uint32
 }
 
+type ChromaRangeType struct {
+	Cmd   uint32
+	Floor uint32
+	Ceil  uint32
+}
+
 func sendUdp(conn io.Writer, data []uint32) {
 	err := binary.Write(conn, LE, data)
 	checkError(err)
@@ -289,6 +295,8 @@ func readStatus(conn io.Reader) {
 		readPinpGeometry(len, reader)
 	case SW_STATUS_ID_SetPinpBorder:
 		readPinpBorder(len, reader)
+	case SW_STATUS_ID_SetChromaRange:
+		readChromaRange(len, reader)
 	default:
 		log.Printf("readStatus: cmd=%d len=%d\n", cmd, len)
 		for len > 0 {

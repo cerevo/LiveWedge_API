@@ -72,6 +72,7 @@ func main() {
 		"SubMode",
 		"PinpGeometry",
 		"PinpBorder",
+		"ChromaRange",
 	}
 
 	file, err := os.Create("a.go")
