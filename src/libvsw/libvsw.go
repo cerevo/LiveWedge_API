@@ -34,6 +34,7 @@ const (
 	SW_ID_RecordingResult          = 0x25
 	SW_ID_SetPinpGeometry          = 0x3d
 	SW_ID_SetPinpBorder            = 0x3e
+	SW_ID_SetChromaRange           = 0x3f
 	SW_ID_SetSubMode               = 0x40
 	SW_ID_SetTimezone              = 0x48
 	SW_ID_SetTime                  = 0x49
