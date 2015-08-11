@@ -1,7 +1,7 @@
 package libvsw
 
-// PinpMode sets the sub screen mode
-func (vsw Vsw) PinpMode(mode int) {
+// SetSubMode sets the sub screen mode
+func (vsw Vsw) SetSubMode(mode int) {
 	cmd := []uint32{SW_ID_SetSubMode, uint32(mode)}
 	send(vsw.conn, cmd)
 }
