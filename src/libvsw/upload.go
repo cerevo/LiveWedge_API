@@ -12,13 +12,16 @@ type uploadFile0 struct {
 	filename      [1024]byte
 }
 
-// UploadFile upload the specified image file and use it as ch.4 input source
+// UploadFile uploads the specified image file and use it as ch.4 input source.
 //
-// The file have to be JPEG image file sized 1280 x 720.
-func (vsw Vsw) UploadFile(filename string) {
+// SD card has to be inserted to LiveWedge because it makes an intermediate file on SD card.
+// The file has to be JPEG image file sized 1280 x 720.
+// UploadFile returns error if the file can not read.
+func (vsw Vsw) UploadFile(filename string) error {
 	data, err := ioutil.ReadFile(filename)
-	checkError(err)
-	//fmt.Printf("len(data)=%d\n", len(data))
+	if err != nil {
+		return err
+	}
 	a := uploadFile0{cmd: SW_ID_UploadFile,
 		contentLength: uint32(len(data))}
 	for i, c := range filename {
@@ -31,4 +34,5 @@ func (vsw Vsw) UploadFile(filename string) {
 	checkError(err)
 	err = binary.Write(vsw.conn, LE, data)
 	checkError(err)
+	return nil
 }
