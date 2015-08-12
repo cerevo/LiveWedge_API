@@ -8,12 +8,7 @@ import (
 	"time"
 )
 
-func main() {
-	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "usge: %s IP_address_of_livewedge\n", os.Args[0])
-		os.Exit(1)
-	}
-	vsw := libvsw.NewVsw(os.Args[1])
+func sample_chromakey(vsw *libvsw.Vsw) {
 	wait := 4000
 
 	vsw.UploadFile("greenback.jpg")
@@ -39,4 +34,14 @@ func main() {
 	vsw.CutUs(1, 4)
 	time.Sleep(time.Duration(wait) * time.Millisecond)
 	vsw.CutUs(1, 0)
+}
+
+func main() {
+	if len(os.Args) < 2 {
+		fmt.Fprintf(os.Stderr, "usage: %s IP_address_of_livewedge\n", os.Args[0])
+		os.Exit(1)
+	}
+	vsw := libvsw.NewVsw(os.Args[1])
+	defer vsw.Close()
+	sample_chromakey(vsw)
 }
