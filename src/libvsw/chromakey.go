@@ -1,9 +1,5 @@
 package libvsw
 
-import (
-	"log"
-)
-
 // Predefined chroma key enumuration
 const (
 	CHROMA_KEY_GREEN = iota
@@ -36,7 +32,6 @@ func chroma_range_entry(u0, v0, u1, v1 int) Chroma_range {
 // SetChromaRange sets color range of chroma key
 func (vsw Vsw) SetChromaRange(r Chroma_range) {
 	cmd := []uint32{SW_ID_SetChromaRange, uint32(r.floor), uint32(r.ceil)}
-	log.Printf("%#v\n", cmd)
 	send(vsw.conn, cmd)
 }
 
