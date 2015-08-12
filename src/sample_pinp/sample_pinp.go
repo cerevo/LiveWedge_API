@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func pinpTest(vsw *libvsw.Vsw, mainSrc, subSrc int) {
+func sample_pinp(vsw *libvsw.Vsw, mainSrc, subSrc int) {
 	vsw.PinpGeometry(0, 0, 65536/4, 65536/4, 0, 0, 65536, 65536)
 	vsw.PinpBorder(0x00ff00ff, 4)
 	vsw.SetSubMode(libvsw.SUB_MODE_PINP)
@@ -46,6 +46,5 @@ func main() {
 	}
 	defer vsw.Close()
 
-	vsw.Cut(1)
-	pinpTest(vsw, 1, 4)
+	sample_pinp(vsw, 1, 4)
 }
