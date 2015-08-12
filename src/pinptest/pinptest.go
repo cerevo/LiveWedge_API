@@ -11,7 +11,7 @@ import (
 func pinpTest(vsw *libvsw.Vsw, mainSrc, subSrc int) {
 	vsw.PinpGeometry(0, 0, 65536/4, 65536/4, 0, 0, 65536, 65536)
 	vsw.PinpBorder(0x00ff00ff, 4)
-	vsw.SetSubMode(1)
+	vsw.SetSubMode(libvsw.SUB_MODE_PINP)
 	vsw.CutUs(mainSrc, subSrc)
 	rate := 1000
 	for {

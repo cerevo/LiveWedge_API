@@ -1,5 +1,11 @@
 package libvsw
 
+// SubMode
+const (
+	SUB_MODE_CHROMAKEY = iota
+	SUB_MODE_PINP
+)
+
 // SetSubMode sets the sub screen mode
 func (vsw Vsw) SetSubMode(mode int) {
 	cmd := []uint32{SW_ID_SetSubMode, uint32(mode)}

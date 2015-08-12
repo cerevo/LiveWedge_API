@@ -46,5 +46,5 @@ func (vsw Vsw) SetChromaKey(color int) {
 		return
 	}
 	vsw.SetChromaRange(chroma_range_table[color])
-	vsw.SetSubMode(0)
+	vsw.SetSubMode(SUB_MODE_CHROMAKEY)
 }
