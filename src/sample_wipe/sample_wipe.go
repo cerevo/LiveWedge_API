@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func wipeTest(vsw *libvsw.Vsw, src1, src2 int) {
+func sample_wipe(vsw *libvsw.Vsw, src1, src2 int) {
 	log.Printf("wipeTest src1=%d src2=%d\n", src1, src2)
 	vsw.Cut(src1)
 
@@ -34,6 +34,6 @@ func main() {
 	defer vsw.Close()
 
 	for {
-		wipeTest(vsw, 1, 4)
+		sample_wipe(vsw, 1, 4)
 	}
 }
