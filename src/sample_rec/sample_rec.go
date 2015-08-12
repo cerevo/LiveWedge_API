@@ -7,8 +7,6 @@ import (
 	"os"
 )
 
-var vsw *libvsw.Vsw
-
 const f0 string = `<html><body>
 Recording
 <form method="post" action="/">
@@ -17,17 +15,6 @@ Recording
 </form>
 Just send command without any error checking.
 </body></html>`
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("rec=%s\n", r.FormValue("rec"))
-
-	if r.FormValue("rec") == "start" {
-		vsw.ChangeRecordingState(1)
-	} else if r.FormValue("rec") == "stop" {
-		vsw.ChangeRecordingState(0)
-	}
-	fmt.Fprint(w, f0)
-}
 
 func main() {
 	if len(os.Args) < 2 {
@@ -40,6 +27,14 @@ func main() {
 		os.Exit(1)
 	}
 	defer vsw.Close()
-	http.HandleFunc("/", handler)
+	fmt.Printf("Open http://localhost:8080/ by web browser.\n")
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.FormValue("rec") == "start" {
+			vsw.ChangeRecordingState(1)
+		} else if r.FormValue("rec") == "stop" {
+			vsw.ChangeRecordingState(0)
+		}
+		fmt.Fprint(w, f0)
+	})
 	http.ListenAndServe(":8080", nil)
 }
