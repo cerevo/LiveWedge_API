@@ -83,7 +83,7 @@ func (vsw Vsw) HeartBeat() {
 
 func checkError(err error) {
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "libvsw: Fatal error: %s", err.Error())
+		fmt.Fprintf(os.Stderr, "libvsw: Fatal error: %s\n", err.Error())
 		os.Exit(1)
 	}
 }
@@ -121,32 +121,41 @@ func readBasicInfo(vsw *Vsw) {
 	checkError(err)
 }
 
-func openTcp(service string) *net.TCPConn {
+func openTcp(service string) (*net.TCPConn, error) {
 	if strings.IndexRune(service, ':') < 0 {
 		service += ":8888"
 	}
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", service)
-	checkError(err)
+	if err != nil {
+		return nil, err
+	}
 
 	conn, err := net.DialTCP("tcp", nil, tcpAddr)
-	checkError(err)
+	if err != nil {
+		return nil, err
+	}
 	log.Println("TCP connected")
-	return conn
+	return conn, nil
 }
 
 // NewVsw creates a new Vsw instance
 //
 // service: ip address or hostname of LiveWedge
-func NewVsw(service string) *Vsw {
+// if failed to open LiveWedge, returns error.
+func NewVsw(service string) (*Vsw, error) {
 	if _vsw == nil {
 		log.Println("New Vsw for", service)
+		conn, err := openTcp(service)
+		if err != nil {
+			return nil, err
+		}
 		_vsw = new(Vsw)
-		_vsw.conn = openTcp(service)
+		_vsw.conn = conn
 		readBasicInfo(_vsw)
 		_vsw.udpConn = openUdp(service)
 		go monitorStatus(*_vsw)
 	}
-	return _vsw
+	return _vsw, nil
 }
 
 // Close the Vsw instance.

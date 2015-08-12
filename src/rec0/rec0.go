@@ -31,11 +31,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "usge: %s IP_address_of_livewedge\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "usage: %s IP_address_of_livewedge\n", os.Args[0])
 		os.Exit(1)
 	}
-	vsw = libvsw.NewVsw(os.Args[1])
-
+	vsw, err := libvsw.NewVsw(os.Args[1])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open LiveWedge: %s\n", err)
+		os.Exit(1)
+	}
+	defer vsw.Close()
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }

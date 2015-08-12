@@ -41,7 +41,11 @@ func main() {
 		fmt.Fprintf(os.Stderr, "usage: %s IP_address_of_livewedge\n", os.Args[0])
 		os.Exit(1)
 	}
-	vsw := libvsw.NewVsw(os.Args[1])
+	vsw, err := libvsw.NewVsw(os.Args[1])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open LiveWedge: %s\n", err)
+		os.Exit(1)
+	}
 	defer vsw.Close()
 	sample_chromakey(vsw)
 }
