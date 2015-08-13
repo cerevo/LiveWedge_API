@@ -1,9 +1,22 @@
-# LiveWedge API sample
+# LiveWedge control library and samples
+
+This provides basic operations for the video switcher, "LiveWedge".
+
+But this is still alpha version. Compatiblity may break in future update.
+
+## Supported operations
+* Screen transfer: Cut, Mix, Dip, Wipe
+* Sub screen control: PinP, Chroma-key
+* Start and stop recording and broadcasting
+* Upload a still picture and use it as ch.4 input source
+* Find LiveWedge within the same network
+
+## Not yet supported
+Getting status from LiveWedge is still under construction. func (vsw Vsw) Request* are not yet fully documented.
 
 ## Contents
 ### libvsw
 Common library for manupulating LiveWedge by network.
-
 
 ### autotrans
 Sample program to make video transition automatically. See src/autotrans/00Readme.txt
@@ -26,7 +39,7 @@ Very simple program just to send recording start/stop command with web UI.
 ### sample_status
 A sample program for getting status via UDP.
 
-### find0
+### sample_find
 A sample program for finding a LiveWedge within the same network.
 
 ## How to build
@@ -34,4 +47,11 @@ A sample program for finding a LiveWedge within the same network.
 0. Install go language.
 Tested in linux/amd64. Go version 1.4. I hope Mac/Windows works, too.
 
-1. Execute ./make.sh
+1. Execute ./make.sh at the top directory
+
+## How to generate API document
+
+At the top directory
+
+    export GOPATH=$PWD:$GOPATH
+    godoc -url "/pkg/libvsw" > libvsw.html

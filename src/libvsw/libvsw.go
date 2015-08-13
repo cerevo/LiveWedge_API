@@ -2,14 +2,15 @@
 //
 // This is still alpha version. Compatiblity may break in future update.
 //
-// Currently supported operations:
-//   Screen transfer: Cut, Mix, Wipe
-//   Sub screen control: PinP
+// Supported operations:
+//   Screen transfer: Cut, Mix, Dip, Wipe
+//   Sub screen control: PinP, Chroma-key
 //   Start and stop recording and broadcasting
 //   Upload a still picture and use it as ch.4 input source
+//   Find LiveWedge in the same network
 //
 // Getting status from LiveWedge is still under construction.
-// func (vsw Vsw) Request* are not yet documented.
+// func (vsw Vsw) Request* are not yet fully documented.
 package libvsw
 
 import (
