@@ -10,4 +10,4 @@ export GOPATH=$PWD:$GOPATH
 (cd src/sample_chromakey; go build)
 (cd src/sample_rec; go build)
 (cd src/sample_status; go build)
-(cd src/find0; go build)
+(cd src/sample_find; go build)
