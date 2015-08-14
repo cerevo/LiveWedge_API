@@ -4,7 +4,7 @@
 
 package libvsw
 
-// Type 'go generate' to generate a.go.
+// Type 'go generate' to generate generated.go.
 //go:generate go run gen/gen.go
 
 import (

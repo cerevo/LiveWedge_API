@@ -79,7 +79,7 @@ func main() {
 		"ChromaRange",
 	}
 
-	file, err := os.Create("a.go")
+	file, err := os.Create("generated.go")
 	if err != nil {
 		log.Fatal(err)
 	}
