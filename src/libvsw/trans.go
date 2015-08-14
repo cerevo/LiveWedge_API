@@ -13,7 +13,7 @@ import (
 type videoTransition struct {
 	cmd          uint32
 	cmdId        uint32
-	param        uint32
+	rate         uint32
 	mode         uint8
 	padding      [3]uint8
 	main_src     uint8
@@ -74,10 +74,10 @@ const (
 	WIPE_TYPE_NUM
 )
 
-func transMain(conn *net.TCPConn, param int, src int, effect int, dip int, manual int) {
+func transMain(conn *net.TCPConn, rate int, src int, effect int, dip int, manual int) {
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
 		cmdId:        VALUE_1,
-		param:        uint32(param),
+		rate:         uint32(rate),
 		mode:         VC_MODE_MAIN,
 		main_src:     uint8(src),
 		main_effect:  uint8(effect),
@@ -97,10 +97,10 @@ func transMain(conn *net.TCPConn, param int, src int, effect int, dip int, manua
 	checkError(err)
 }
 
-func transSub(conn *net.TCPConn, param int, src int, effect int, dip int, manual int) {
+func transSub(conn *net.TCPConn, rate int, src int, effect int, dip int, manual int) {
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
 		cmdId:       VALUE_1,
-		param:       uint32(param),
+		rate:        uint32(rate),
 		mode:        VC_MODE_SUB,
 		sub_src:     uint8(src),
 		sub_effect:  uint8(effect),
@@ -112,10 +112,10 @@ func transSub(conn *net.TCPConn, param int, src int, effect int, dip int, manual
 	checkError(err)
 }
 
-func transUs(conn *net.TCPConn, param int, src int, src2 int, effect int, dip int, manual int) {
+func transUs(conn *net.TCPConn, rate int, src int, src2 int, effect int, dip int, manual int) {
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
 		cmdId:        VALUE_1,
-		param:        uint32(param),
+		rate:         uint32(rate),
 		mode:         VC_MODE_US,
 		main_src:     uint8(src),
 		main_effect:  uint8(effect),
@@ -127,7 +127,6 @@ func transUs(conn *net.TCPConn, param int, src int, src2 int, effect int, dip in
 	err = binary.Write(conn, LE, a)
 	checkError(err)
 }
-
 
 // Cut changes the main screen to the specified src immediately.
 func (vsw Vsw) Cut(src int) {
@@ -164,32 +163,32 @@ func (vsw Vsw) CutUs(src int, src2 int) {
 
 // Mix transits the main screen to the specified src.
 //
-// 
-func (vsw Vsw) Mix(param int, src int) {
-	//log.Printf("mix(%d, %d)\n", param, src)
+//
+func (vsw Vsw) Mix(rate int, src int) {
+	//log.Printf("mix(%d, %d)\n", rate, src)
 	if src < 0 || 4 < src {
 		return
 	}
-	transMain(vsw.conn, param, src, TRANSITION_TYPE_MIX, 0, 0)
+	transMain(vsw.conn, rate, src, TRANSITION_TYPE_MIX, 0, 0)
 }
 
 // Dip transits the main screen to the specified src through dip_src in the specified duration.
-func (vsw Vsw) Dip(param int, src int, dip_src int) {
-	//log.Printf("dip(%d, %d, %d)\n", param, src, dip_src)
+func (vsw Vsw) Dip(rate int, src int, dip_src int) {
+	//log.Printf("dip(%d, %d, %d)\n", rate, src, dip_src)
 	if src < 0 || 4 < src {
 		return
 	}
-	transMain(vsw.conn, param, src, TRANSITION_TYPE_DIP, dip_src, 0)
+	transMain(vsw.conn, rate, src, TRANSITION_TYPE_DIP, dip_src, 0)
 }
 
 // Wipe transits the main screen to the specified src in the specified duration, using the specified wipe_type.
-func (vsw Vsw) Wipe(param int, src int, wipe_type int) {
-	//log.Printf("wipe(%d, %d, %d)\n", param, src, wipe_type)
+func (vsw Vsw) Wipe(rate int, src int, wipe_type int) {
+	//log.Printf("wipe(%d, %d, %d)\n", rate, src, wipe_type)
 	if src < 0 || 4 < src {
 		return
 	}
 	if wipe_type < 0 || wipe_type >= WIPE_TYPE_NUM {
 		return
 	}
-	transMain(vsw.conn, param, src, TRANSITION_TYPE_WIPE+wipe_type, 0, 0)
+	transMain(vsw.conn, rate, src, TRANSITION_TYPE_WIPE+wipe_type, 0, 0)
 }

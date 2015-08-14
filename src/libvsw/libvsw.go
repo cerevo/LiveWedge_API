@@ -145,19 +145,18 @@ func openTcp(service string) (*net.TCPConn, error) {
 
 // NewVsw creates a new Vsw instance
 //
-// service: ip address or hostname of LiveWedge
 // if failed to open LiveWedge, returns error.
-func NewVsw(service string) (*Vsw, error) {
+func NewVsw(ip_address string) (*Vsw, error) {
 	if _vsw == nil {
-		log.Println("New Vsw for", service)
-		conn, err := openTcp(service)
+		log.Println("New Vsw for", ip_address)
+		conn, err := openTcp(ip_address)
 		if err != nil {
 			return nil, err
 		}
 		_vsw = new(Vsw)
 		_vsw.conn = conn
 		readBasicInfo(_vsw)
-		_vsw.udpConn = openUdp(service)
+		_vsw.udpConn = openUdp(ip_address)
 		go monitorStatus(*_vsw)
 	}
 	return _vsw, nil
