@@ -25,5 +25,4 @@
   http://localhost:8080/
 
 Note:
-* The file name of A still picuture to upload is fixed to 'a.jpg'.
 * Settings are saved in 'autotrans.json'.

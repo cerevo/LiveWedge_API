@@ -16,8 +16,6 @@ import (
 
 const PARAM_VERSION = 5
 const PARAMS_FILE = "autotrans.json"
-const TMP_PICTURE = "_a.jpg"
-const DEFAULT_PICTURE = "a.jpg"
 
 type Params struct {
 	Param_version      int
@@ -27,7 +25,7 @@ type Params struct {
 	Rate               int /* msec */
 	StartLiveBroadcast bool
 	UploadStillPicture bool
-	PictureUrl string
+	Picture string
 }
 
 var defaultParams = Params{
@@ -38,7 +36,7 @@ var defaultParams = Params{
 	Rate:               5000,
 	StartLiveBroadcast: false,
 	UploadStillPicture: false,
-	PictureUrl: "",
+	Picture: "",
 }
 
 func random(min, max int) int {
@@ -53,13 +51,11 @@ func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 		case pa = <-notify:
 			log.Printf("got from chan\n")
 			saveParams(pa)
+			if pa.UploadStillPicture {
+				vsw.UploadFile(pa.Picture)
+			}
 		case <-time.After(time.Second * time.Duration(pa.Interval)):
 			log.Printf("periodic timer\n")
-		}
-		if pa.UploadStillPicture {
-			if Get_if_changed(pa.PictureUrl, TMP_PICTURE) {
-				vsw.UploadFile(TMP_PICTURE)
-			}
 		}
 		index = (index + 1) % 4
 		i := 0
@@ -145,11 +141,7 @@ func main() {
 		vsw.ChangeLiveBroadcastState(1)
 	}
 	if pa.UploadStillPicture {
-		if Get(pa.PictureUrl, TMP_PICTURE) {
-			vsw.UploadFile(TMP_PICTURE)
-		} else {
-			vsw.UploadFile(DEFAULT_PICTURE)
-		}
+		vsw.UploadFile(pa.Picture)
 	}
 
 	notify := make(chan Params, 1)
