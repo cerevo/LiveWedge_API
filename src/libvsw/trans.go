@@ -146,6 +146,15 @@ func (vsw Vsw) CutSub(src int) {
 	transSub(vsw.conn, 1, src, TRANSITION_TYPE_CUT, 0, 0)
 }
 
+// MixSub changes the sub screen to the specified src.
+func (vsw Vsw) MixSub(rate int, src int) {
+	//log.Printf("mixSub(%d)\n", src)
+	if src < 0 || 4 < src {
+		return
+	}
+	transSub(vsw.conn, rate, src, TRANSITION_TYPE_MIX, 0, 0)
+}
+
 // CutUs changes both main and sub screen immediately.
 func (vsw Vsw) CutUs(src int, src2 int) {
 	//log.Printf("cutUs(%d,%d)\n", src, src2)
@@ -191,4 +200,16 @@ func (vsw Vsw) Wipe(rate int, src int, wipe_type int) {
 		return
 	}
 	transMain(vsw.conn, rate, src, TRANSITION_TYPE_WIPE+wipe_type, 0, 0)
+}
+
+// Wipe transits the sub screen to the specified src in the specified duration, using the specified wipe_type.
+func (vsw Vsw) WipeSub(rate int, src int, wipe_type int) {
+	//log.Printf("wipe(%d, %d, %d)\n", rate, src, wipe_type)
+	if src < 0 || 4 < src {
+		return
+	}
+	if wipe_type < 0 || wipe_type >= WIPE_TYPE_NUM {
+		return
+	}
+	transSub(vsw.conn, rate, src, TRANSITION_TYPE_WIPE+wipe_type, 0, 0)
 }
