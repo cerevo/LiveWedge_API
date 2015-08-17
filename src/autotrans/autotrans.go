@@ -51,6 +51,11 @@ func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 		case pa = <-notify:
 			log.Printf("got from chan\n")
 			saveParams(pa)
+			if pa.StartLiveBroadcast {
+				vsw.ChangeLiveBroadcastState(1)
+			} else {
+				vsw.ChangeLiveBroadcastState(0)
+			}
 			if pa.UploadStillPicture {
 				vsw.UploadFile(pa.Picture)
 			}
@@ -139,6 +144,8 @@ func main() {
 	pa := loadParams(PARAMS_FILE)
 	if pa.StartLiveBroadcast {
 		vsw.ChangeLiveBroadcastState(1)
+	} else {
+		vsw.ChangeLiveBroadcastState(0)
 	}
 	if pa.UploadStillPicture {
 		vsw.UploadFile(pa.Picture)

@@ -26,10 +26,9 @@ const htmlPage string = `
   {{select .Trans}} rate {{select .Rate}}</p>
   <p>Interval:<br/>
   {{select .Interval}}</p>
-  <p>Boot time options:<br/>
-  <input type="checkbox" name="broadcast" value="true" {{if .StartLiveBroadcast}}checked="checked"{{end}} /> Start live broadcasting<br/>
   <input type="checkbox" name="upload" value="true" {{if .UploadStillPicture}}checked="checked"{{end}}/> Upload a still picture and use it as input4<br/>
-  <input type="text" name="picture" size="40" value="{{.Picture}}" /><br/>
+  File name <input type="text" name="picture" size="40" value="{{.Picture}}" /><br/>
+  <input type="checkbox" name="broadcast" value="true" {{if .StartLiveBroadcast}}checked="checked"{{end}} /> Live broadcasting<br/>
   <input type="submit" name="send" value="send" />
   <div align="right"><input type="submit" name="quit" value="quit" /></div>
 </form></body></html>`
