@@ -9,11 +9,14 @@ import (
 )
 
 func sample_pinp(vsw *libvsw.Vsw, mainSrc, subSrc int) {
+	vsw.Cut(mainSrc)
+	vsw.CutSub(0) // Erase sub screen
 	vsw.PinpGeometry(0, 0, 65536/4, 65536/4, 0, 0, 65536, 65536)
 	vsw.PinpBorder(0x00ff00ff, 4)
 	vsw.SetSubMode(libvsw.SUB_MODE_PINP)
-	vsw.CutUs(mainSrc, subSrc)
 	rate := 1000
+	vsw.MixSub(rate, subSrc) // Show sub screen slowly
+	time.Sleep(time.Duration(rate) * time.Millisecond)
 	for {
 		for i := 1; i < 4; i++ {
 			time.Sleep(time.Duration(rate) * time.Millisecond)
