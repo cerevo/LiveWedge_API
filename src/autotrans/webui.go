@@ -28,6 +28,7 @@ const htmlPage string = `
   {{select .Interval}}</p>
   <input type="checkbox" name="upload" value="true" {{if .UploadStillPicture}}checked="checked"{{end}}/> Upload a still picture and use it as input4<br/>
   File name <input type="text" name="picture" size="40" value="{{.Picture}}" /><br/>
+  (Insert a writable SD card to LiveWedge)<br/><br/>
   <input type="checkbox" name="broadcast" value="true" {{if .StartLiveBroadcast}}checked="checked"{{end}} /> Live broadcasting<br/>
   <input type="submit" name="send" value="send" />
   <div align="right"><input type="submit" name="quit" value="quit" /></div>
@@ -206,6 +207,7 @@ func WebUI(pa Params, nt chan Params) {
 	}
 	template0 = template.Must(template.New("autotrans").Funcs(funcMap).Parse(htmlPage))
 
+	fmt.Printf("Open http://localhost:8080/ by web browser.\n")
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
