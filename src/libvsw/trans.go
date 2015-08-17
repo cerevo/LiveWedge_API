@@ -147,6 +147,7 @@ func (vsw Vsw) CutSub(src int) {
 }
 
 // MixSub changes the sub screen to the specified src.
+// rate is in msec.
 func (vsw Vsw) MixSub(rate int, src int) {
 	//log.Printf("mixSub(%d)\n", src)
 	if src < 0 || 4 < src {
@@ -171,8 +172,7 @@ func (vsw Vsw) CutUs(src int, src2 int) {
 }
 
 // Mix transits the main screen to the specified src.
-//
-//
+// rate is in msec.
 func (vsw Vsw) Mix(rate int, src int) {
 	//log.Printf("mix(%d, %d)\n", rate, src)
 	if src < 0 || 4 < src {
@@ -182,6 +182,7 @@ func (vsw Vsw) Mix(rate int, src int) {
 }
 
 // Dip transits the main screen to the specified src through dip_src in the specified duration.
+// rate is in msec.
 func (vsw Vsw) Dip(rate int, src int, dip_src int) {
 	//log.Printf("dip(%d, %d, %d)\n", rate, src, dip_src)
 	if src < 0 || 4 < src {
@@ -191,6 +192,7 @@ func (vsw Vsw) Dip(rate int, src int, dip_src int) {
 }
 
 // Wipe transits the main screen to the specified src in the specified duration, using the specified wipe_type.
+// rate is in msec.
 func (vsw Vsw) Wipe(rate int, src int, wipe_type int) {
 	//log.Printf("wipe(%d, %d, %d)\n", rate, src, wipe_type)
 	if src < 0 || 4 < src {
@@ -203,6 +205,7 @@ func (vsw Vsw) Wipe(rate int, src int, wipe_type int) {
 }
 
 // Wipe transits the sub screen to the specified src in the specified duration, using the specified wipe_type.
+// rate is in msec.
 func (vsw Vsw) WipeSub(rate int, src int, wipe_type int) {
 	//log.Printf("wipe(%d, %d, %d)\n", rate, src, wipe_type)
 	if src < 0 || 4 < src {

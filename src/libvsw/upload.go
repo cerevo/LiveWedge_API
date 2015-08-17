@@ -18,7 +18,7 @@ type uploadFile0 struct {
 
 // UploadFile uploads the specified image file and use it as ch.4 input source.
 //
-// SD card has to be inserted to LiveWedge because it makes an intermediate file on SD card.
+// SD card has to be inserted to LiveWedge because the destination of uploaded file is the SD card.
 // The file has to be JPEG image file sized 1280 x 720.
 // UploadFile returns error if the file can not read.
 func (vsw Vsw) UploadFile(filename string) error {

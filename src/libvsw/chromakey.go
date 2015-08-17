@@ -40,6 +40,8 @@ func (vsw Vsw) SetChromaRange(r Chroma_range) {
 }
 
 // SetChromaKey sets chroma key in predefined color
+// color is libvsw.CHROMA_KEY_GREEN, libvsw.CHROMA_KEY_BLUE, libvsw.CHROMA_KEY_PURPLE or libvsw.CHROMA_KEY_RED.
+// For other color, use SetChromaRange and then call SetSubMode(SUB_MODE_CHROMAKEY)
 func (vsw Vsw) SetChromaKey(color int) {
 	if 0 > color || color >= CHROMA_KEY_NUM {
 		return
