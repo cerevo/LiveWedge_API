@@ -11,10 +11,13 @@ import (
 func sample_status(vsw *libvsw.Vsw) {
 	c := vsw.RequestSwitcherStatus()
 	c2 := vsw.RequestRecordingResult()
+	// You get other channels by vsw.Request* in a similar way.
+
 	tick := time.Tick(10 * time.Second)
 	for {
 		select {
 		case <-tick:
+			// Send heart beat every 10 seconds
 			vsw.HeartBeat()
 			log.Printf("sample_status: HeartBeat!\n")
 		case ss := <-c:

@@ -11,6 +11,7 @@ import (
 func sample_pinp(vsw *libvsw.Vsw, mainSrc, subSrc int) {
 	vsw.Cut(mainSrc)
 	vsw.CutSub(0) // Erase sub screen
+	// Scale quarter size, No cropping
 	vsw.PinpGeometry(0, 0, 65536/4, 65536/4, 0, 0, 65536, 65536)
 	vsw.PinpBorder(0x00ff00ff, 4)
 	vsw.SetSubMode(libvsw.SUB_MODE_PINP)
