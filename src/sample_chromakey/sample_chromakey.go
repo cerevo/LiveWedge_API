@@ -9,31 +9,34 @@ import (
 )
 
 func sample_chromakey(vsw *libvsw.Vsw) {
-	wait := 4000
+	wait := 8000
+	vsw.CutSub(0)
+	vsw.Cut(1)
 
+	// You have to insert a writable SD card to LiveWedge.
 	vsw.UploadFile("greenback.jpg")
 	vsw.SetChromaKey(libvsw.CHROMA_KEY_GREEN)
-	vsw.CutUs(1, 4)
+	vsw.CutSub(4)
 	time.Sleep(time.Duration(wait) * time.Millisecond)
-	vsw.CutUs(1, 0)
+	vsw.CutSub(0)
 
 	vsw.UploadFile("blueback.jpg")
 	vsw.SetChromaKey(libvsw.CHROMA_KEY_BLUE)
-	vsw.CutUs(1, 4)
+	vsw.MixSub(2000, 4)
 	time.Sleep(time.Duration(wait) * time.Millisecond)
-	vsw.CutUs(1, 0)
+	vsw.MixSub(2000, 0)
 
 	vsw.UploadFile("purpleback.jpg")
 	vsw.SetChromaKey(libvsw.CHROMA_KEY_PURPLE)
-	vsw.CutUs(1, 4)
+	vsw.CutSub(4)
 	time.Sleep(time.Duration(wait) * time.Millisecond)
-	vsw.CutUs(1, 0)
+	vsw.CutSub(0)
 
 	vsw.UploadFile("redback.jpg")
 	vsw.SetChromaKey(libvsw.CHROMA_KEY_RED)
-	vsw.CutUs(1, 4)
+	vsw.MixSub(2000, 4)
 	time.Sleep(time.Duration(wait) * time.Millisecond)
-	vsw.CutUs(1, 0)
+	vsw.MixSub(2000, 0)
 }
 
 func main() {
