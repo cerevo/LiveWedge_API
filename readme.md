@@ -6,7 +6,9 @@
 
 This provides basic operations for the video switcher, "LiveWedge".
 
-But this is still alpha version. Compatiblity may break in future update.
+(See http://livewedge.cerevo.com/en/ about LiveWedge.)
+
+This library is still alpha version. Compatiblity may break in future update.
 
 ## Supported operations
 * Screen transfer: Cut, Mix, Dip, Wipe
@@ -51,7 +53,7 @@ A sample program for finding a LiveWedge within the same network.
 0. Install go language.
 Tested in linux/amd64. Go version 1.4. I hope Mac/Windows works, too.
 
-1. Execute ./make.sh at the top directory
+1. Execute ./make.sh at the top directory.
 
 ## How to generate API document
 
