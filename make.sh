@@ -1,7 +1,11 @@
 #!/bin/sh
 set -x
 
-export GOPATH=$PWD:$GOPATH
+if [ -z $GOPATH ]; then
+    export GOPATH=$PWD
+else
+    export GOPATH=$PWD:$GOPATH
+fi
 (cd src/libvsw; go generate; go install)
 (cd src/autotrans; go build)
 (cd src/sample_trans; go build)
