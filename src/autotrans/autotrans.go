@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"libvsw"
 	"log"
+	"math/rand"
 	"os"
 	"time"
-	"math/rand"
 )
 
 const PARAM_VERSION = 5
@@ -25,23 +25,23 @@ type Params struct {
 	Rate               int /* msec */
 	StartLiveBroadcast bool
 	UploadStillPicture bool
-	Picture string
+	Picture            string
 }
 
 var defaultParams = Params{
 	Param_version:      PARAM_VERSION,
 	Input:              [4]bool{true, true, false, false},
 	Interval:           30,
-	Trans:              0x302, /* Dip to 4 */
-	Rate:               5000,
+	Trans:              255, /* Random wipe */
+	Rate:               3000,
 	StartLiveBroadcast: false,
 	UploadStillPicture: false,
-	Picture: "",
+	Picture:            "",
 }
 
 func random(min, max int) int {
-    rand.Seed(time.Now().Unix())
-    return rand.Intn(max - min) + min
+	rand.Seed(time.Now().Unix())
+	return rand.Intn(max-min) + min
 }
 
 func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
@@ -85,7 +85,7 @@ func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 		case 2:
 			vsw.Dip(pa.Rate, index+1, ((pa.Trans>>8)&3)+1)
 		case 255:
-			vsw.Wipe(pa.Rate, index+1, random(0, libvsw.WIPE_TYPE_NUM - 1))
+			vsw.Wipe(pa.Rate, index+1, random(0, libvsw.WIPE_TYPE_NUM-1))
 		default:
 			vsw.Wipe(pa.Rate, index+1, pa.Trans-libvsw.TRANSITION_TYPE_WIPE)
 		}
