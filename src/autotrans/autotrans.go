@@ -14,13 +14,14 @@ import (
 	"time"
 )
 
-const PARAM_VERSION = 5
+const PARAM_VERSION = 6
 const PARAMS_FILE = "autotrans.json"
 
 type Params struct {
 	Param_version      int
 	Input              [4]bool
 	Interval           int /* sec */
+	SuspendTime        int /* sec */
 	Trans              int /* bit0-7 {CUT, MIX, DIP, WIPE, ..}, bit8-9:dip_src */
 	Rate               int /* msec */
 	StartLiveBroadcast bool
@@ -32,6 +33,7 @@ var defaultParams = Params{
 	Param_version:      PARAM_VERSION,
 	Input:              [4]bool{true, true, false, false},
 	Interval:           30,
+	SuspendTime:        180,
 	Trans:              255, /* Random wipe */
 	Rate:               3000,
 	StartLiveBroadcast: false,
@@ -46,7 +48,16 @@ func random(min, max int) int {
 
 func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 	index := 0
+	switcherStatus := vsw.RequestSwitcherStatus()
+	main_src := -1
+	suspend := false
+	wait := time.Duration(0)
 	for {
+		if suspend {
+			wait = time.Second * time.Duration(pa.SuspendTime)
+		} else {
+			wait = time.Second * time.Duration(pa.Interval)
+		}
 		select {
 		case pa = <-notify:
 			log.Printf("got from chan\n")
@@ -59,35 +70,48 @@ func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 			if pa.UploadStillPicture {
 				vsw.UploadFile(pa.Picture)
 			}
-		case <-time.After(time.Second * time.Duration(pa.Interval)):
-			log.Printf("periodic timer\n")
-		}
-		index = (index + 1) % 4
-		i := 0
-		for ; i < 4; i++ {
-			if pa.Input[i] == true {
-				break
+			main_src = -1
+			suspend = false
+		case <-switcherStatus:
+			if main_src == -1 {
+				log.Printf("touched\n")
+				suspend = true
 			}
-		}
-		if i == 4 {
-			// no input checked
-			pa.Interval = 1000000
 			continue
+		case <-time.After(wait):
+			log.Printf("periodic timer\n")
+			suspend = false
 		}
-		for pa.Input[index] == false {
+		if !suspend {
+
+			if main_src != int(libvsw.SwitcherStatus.Main_src) && main_src != -1 {
+				log.Printf("User touched!\n")
+				main_src = -1
+				suspend = true
+				continue
+			}
+			old_index := index
 			index = (index + 1) % 4
-		}
-		switch pa.Trans & 0xff {
-		case 0:
-			vsw.Cut(index + 1)
-		case 1:
-			vsw.Mix(pa.Rate, index+1)
-		case 2:
-			vsw.Dip(pa.Rate, index+1, ((pa.Trans>>8)&3)+1)
-		case 255:
-			vsw.Wipe(pa.Rate, index+1, random(0, libvsw.WIPE_TYPE_NUM-1))
-		default:
-			vsw.Wipe(pa.Rate, index+1, pa.Trans-libvsw.TRANSITION_TYPE_WIPE)
+			for pa.Input[index] == false ||
+				index+1 == int(libvsw.SwitcherStatus.Sub_src) {
+				index = (index + 1) % 4
+				if old_index == index {
+					continue
+				}
+			}
+			switch pa.Trans & 0xff {
+			case 0:
+				vsw.Cut(index + 1)
+			case 1:
+				vsw.Mix(pa.Rate, index+1)
+			case 2:
+				vsw.Dip(pa.Rate, index+1, ((pa.Trans>>8)&3)+1)
+			case 255:
+				vsw.Wipe(pa.Rate, index+1, random(0, libvsw.WIPE_TYPE_NUM-1))
+			default:
+				vsw.Wipe(pa.Rate, index+1, pa.Trans-libvsw.TRANSITION_TYPE_WIPE)
+			}
+			main_src = index + 1
 		}
 	}
 }

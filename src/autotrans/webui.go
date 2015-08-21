@@ -26,6 +26,8 @@ const htmlPage string = `
   {{select .Trans}} rate {{select .Rate}}</p>
   <p>Interval:<br/>
   {{select .Interval}}</p>
+  <p>Suspend time:<br/>
+  {{select .SuspendTime}}</p>
   <input type="checkbox" name="upload" value="true" {{if .UploadStillPicture}}checked="checked"{{end}}/> Upload a still picture and use it as input4<br/>
   File name <input type="text" name="picture" size="40" value="{{.Picture}}" /><br/>
   (Insert a writable SD card to LiveWedge)<br/><br/>
@@ -36,11 +38,12 @@ const htmlPage string = `
 
 type tmplParams struct {
 	Interval           *forHTMLSelect
+	SuspendTime        *forHTMLSelect
 	Trans              *forHTMLSelect
 	Rate               *forHTMLSelect
 	StartLiveBroadcast bool
 	UploadStillPicture bool
-	Picture string
+	Picture            string
 	Input1             bool
 	Input2             bool
 	Input3             bool
@@ -59,8 +62,8 @@ type forHTMLSelect struct {
 }
 
 var (
-	params Params
-	notify chan Params
+	params    Params
+	notify    chan Params
 	template0 *template.Template
 )
 
@@ -71,6 +74,17 @@ var tp = tmplParams{
 			selectItem{10, "10 sec"},
 			selectItem{30, "30 sec"},
 			selectItem{60, "1 min"},
+			selectItem{180, "3 min"},
+			selectItem{300, "5 min"},
+			selectItem{600, "10 min"},
+			selectItem{1200, "20 min"},
+		},
+	},
+	SuspendTime: &forHTMLSelect{
+		Name: "suspend_time",
+		Options: []selectItem{
+			selectItem{60, "1 min"},
+			selectItem{120, "2 min"},
 			selectItem{180, "3 min"},
 			selectItem{300, "5 min"},
 			selectItem{600, "10 min"},
@@ -157,9 +171,11 @@ func form(r *http.Request) {
 		}
 	}
 	interval, _ := strconv.ParseInt(r.FormValue("interval"), 10, 32)
+	suspend_time, _ := strconv.ParseInt(r.FormValue("suspend_time"), 10, 32)
 	t, _ := strconv.ParseInt(r.FormValue("trans"), 10, 32)
 	rate, _ := strconv.ParseInt(r.FormValue("rate"), 10, 32)
 	params.Interval = int(interval)
+	params.SuspendTime = int(suspend_time)
 	params.Trans = int(t)
 	params.Rate = int(rate)
 	params.StartLiveBroadcast = (r.FormValue("broadcast") == "true")
@@ -174,6 +190,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tp.Interval.Selected = params.Interval
+	tp.SuspendTime.Selected = params.SuspendTime
 	tp.Trans.Selected = params.Trans
 	tp.Rate.Selected = params.Rate
 	tp.StartLiveBroadcast = params.StartLiveBroadcast
