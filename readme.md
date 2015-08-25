@@ -59,3 +59,24 @@ Tested in linux/amd64. Go version 1.4 and 1.5. I hope Mac/Windows works, too.
 
 https://godoc.org/github.com/cerevo/LiveWedge_API/src/libvsw
 
+## How to use
+At first, create vsw instance.
+
+	ip_address := "192.168.21.5" //ip address of LiveWedge
+	vsw, err := libvsw.NewVsw(ip_address)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open LiveWedge: %s\n", err)
+		os.Exit(1)
+	}
+	defer vsw.Close()
+
+Then, invoke method of vsw. For example, cut every 3 seconds.
+
+	i := 0
+	for {
+		vsw.Cut(i + 1)  // src is {1..4}
+		i = (i + 1) % 4
+		time.Sleep(3 * time.Second)
+	}
+
+See src/sample_trans/sample_trans.go for complete example.
