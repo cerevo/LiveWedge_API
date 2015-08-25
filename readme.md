@@ -51,13 +51,11 @@ A sample program for finding a LiveWedge within the same network.
 ## How to build
 
 0. Install go language.
-Tested in linux/amd64. Go version 1.4. I hope Mac/Windows works, too.
+Tested in linux/amd64. Go version 1.4 and 1.5. I hope Mac/Windows works, too.
 
 1. Execute ./make.sh at the top directory.
 
-## How to generate API document
+## API document
 
-At the top directory
+https://godoc.org/github.com/cerevo/LiveWedge_API/src/libvsw
 
-    export GOPATH=$PWD:$GOPATH
-    godoc -url "/pkg/libvsw" > libvsw.html
