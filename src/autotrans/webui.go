@@ -26,8 +26,7 @@ const htmlPage string = `
   {{select .Trans}} rate {{select .Rate}}</p>
   <p>Interval:<br/>
   {{select .Interval}}</p>
-  <p>Suspend time:<br/>
-  {{select .SuspendTime}}</p>
+  <p>When user operate manually, auto transison suspend and resume after {{select .SuspendTime}}</p>
   <input type="checkbox" name="upload" value="true" {{if .UploadStillPicture}}checked="checked"{{end}}/> Upload a still picture and use it as input4<br/>
   File name <input type="text" name="picture" size="40" value="{{.Picture}}" /><br/>
   (Insert a writable SD card to LiveWedge)<br/><br/>
@@ -72,6 +71,7 @@ var tp = tmplParams{
 		Name: "interval",
 		Options: []selectItem{
 			selectItem{10, "10 sec"},
+			selectItem{20, "20 sec"},
 			selectItem{30, "30 sec"},
 			selectItem{60, "1 min"},
 			selectItem{180, "3 min"},
@@ -83,6 +83,7 @@ var tp = tmplParams{
 	SuspendTime: &forHTMLSelect{
 		Name: "suspend_time",
 		Options: []selectItem{
+			selectItem{0, "0 min"},
 			selectItem{60, "1 min"},
 			selectItem{120, "2 min"},
 			selectItem{180, "3 min"},
