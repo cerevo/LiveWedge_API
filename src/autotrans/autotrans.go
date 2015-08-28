@@ -56,7 +56,11 @@ func loop(vsw *libvsw.Vsw, pa Params, notify chan Params) {
 		if suspend {
 			wait = time.Second * time.Duration(pa.SuspendTime)
 		} else {
-			wait = time.Second * time.Duration(pa.Interval)
+			w :=pa.Interval * 1000 - pa.Rate
+			if w < 0 {
+				w = 0
+			}
+			wait = time.Millisecond * time.Duration(w)
 		}
 		select {
 		case pa = <-notify:
