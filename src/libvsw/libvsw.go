@@ -29,6 +29,7 @@ import (
 
 var _LE = binary.LittleEndian
 
+// command ID
 const (
 	SW_ID_SwBasicInfo              = 0x03
 	SW_ID_UploadFile               = 0x0c

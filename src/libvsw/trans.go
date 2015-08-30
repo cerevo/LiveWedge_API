@@ -33,6 +33,7 @@ const (
 	_VC_MODE_US
 )
 
+// Transision type
 const (
 	TRANSITION_TYPE_NULL = iota
 	TRANSITION_TYPE_MIX
@@ -40,6 +41,8 @@ const (
 	TRANSITION_TYPE_WIPE
 	TRANSITION_TYPE_CUT = TRANSITION_TYPE_NULL
 )
+
+// Wipe type
 const (
 	WIPE_HORIZONTAL   = iota
 	WIPE_HORIZONTAL_R // _R means reversed pattern
@@ -71,6 +74,7 @@ const (
 	WIPE_SQUARE_BOTTOM_R
 	WIPE_SQUARE_BOTTOM_RIGHT
 	WIPE_SQUARE_BOTTOM_RIGHT_R
+
 	WIPE_TYPE_NUM
 )
 
