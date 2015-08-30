@@ -230,7 +230,7 @@ type ChromaRangeType struct {
 }
 
 func sendUdp(conn io.Writer, data []uint32) {
-	err := binary.Write(conn, LE, data)
+	err := binary.Write(conn, _LE, data)
 	checkError(err)
 }
 
@@ -255,7 +255,7 @@ func readStatus(conn io.Reader) {
 	reader := bytes.NewReader(buf[:len])
 	reader2 := bytes.NewReader(buf[:4])
 	var cmd uint32
-	err = binary.Read(reader2, LE, &cmd)
+	err = binary.Read(reader2, _LE, &cmd)
 	checkError(err)
 
 	//log.Printf("cmd=%d\n", cmd)
@@ -304,7 +304,7 @@ func readStatus(conn io.Reader) {
 	default:
 		log.Printf("readStatus: cmd=%d len=%d\n", cmd, len)
 		for len > 0 {
-			err = binary.Read(reader, LE, &cmd)
+			err = binary.Read(reader, _LE, &cmd)
 			checkError(err)
 			log.Printf("%08x ", cmd)
 			len -= 4

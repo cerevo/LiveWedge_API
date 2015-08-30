@@ -50,7 +50,7 @@ func read(conn net.PacketConn) (SwApi_FindSwAck, net.Addr, error) {
 		log.Fatal(err)
 	}
 	buffer := bytes.NewBuffer(buf[:len])
-	err = binary.Read(buffer, LE, &pkt)
+	err = binary.Read(buffer, _LE, &pkt)
 	if err != nil {
 		log.Fatal(err)
 	}

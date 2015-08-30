@@ -42,7 +42,7 @@ func read%[1]s(len int, reader *bytes.Reader) {
 		log.Printf(" size mismatch %%T len=%%d\n", a, len)
 		return
 	}
-	err := binary.Read(reader, LE, &a)
+	err := binary.Read(reader, _LE, &a)
 	checkError(err)
 	if %[1]s != a {
 		//log.Printf("%%#v\n", a)

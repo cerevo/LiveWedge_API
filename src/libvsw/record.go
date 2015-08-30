@@ -15,7 +15,7 @@ import (
 
 func readRecordingState(conn io.Reader) (state, result uint32) {
 	var len int32
-	err := binary.Read(conn, LE, &len)
+	err := binary.Read(conn, _LE, &len)
 	checkError(err)
 	//fmt.Printf("len=%d\n", len)
 	if len != 12 {
@@ -23,15 +23,15 @@ func readRecordingState(conn io.Reader) (state, result uint32) {
 	}
 
 	var cmd uint32
-	err = binary.Read(conn, LE, &cmd)
+	err = binary.Read(conn, _LE, &cmd)
 	checkError(err)
 	//fmt.Printf("cmd=%x\n", cmd)
 	if cmd != SW_ID_RecordingResult {
 		fmt.Fprintf(os.Stderr, "libvsw: Fatal error. cmd != SW_ID_RecrodingResult \n")
 	}
-	err = binary.Read(conn, LE, &state)
+	err = binary.Read(conn, _LE, &state)
 	checkError(err)
-	err = binary.Read(conn, LE, &result)
+	err = binary.Read(conn, _LE, &result)
 	checkError(err)
 	return state, result
 }
@@ -39,7 +39,7 @@ func readRecordingState(conn io.Reader) (state, result uint32) {
 func readLiveBroadcastResult(conn io.Reader) {
 	var a LiveBroadcastResultType
 	var len int32
-	err := binary.Read(conn, LE, &len)
+	err := binary.Read(conn, _LE, &len)
 	checkError(err)
 	//fmt.Printf("len=%d\n", len)
 
@@ -47,7 +47,7 @@ func readLiveBroadcastResult(conn io.Reader) {
 		log.Printf(" size mismatch %T len=%d\n", a, len)
 		return
 	}
-	err = binary.Read(conn, LE, &a)
+	err = binary.Read(conn, _LE, &a)
 	checkError(err)
 	//log.Printf("%#v\n", a)
 }

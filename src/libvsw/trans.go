@@ -84,16 +84,16 @@ func transMain(conn *net.TCPConn, rate int, src int, effect int, dip int, manual
 		main_dip_src: uint8(dip)}
 	//fmt.Printf("sizeof a=%d\n", unsafe.Sizeof(a))
 	//buf := new(bytes.Buffer)
-	//err := binary.Write(buf, LE, a)
+	//err := binary.Write(buf, _LE, a)
 	//checkError(err)
 	//for _, b := range buf.Bytes() {
 	//	fmt.Printf("%02x ", b)
 	//}
 
 	size := uint32(unsafe.Sizeof(a))
-	err := binary.Write(conn, LE, size)
+	err := binary.Write(conn, _LE, size)
 	checkError(err)
-	err = binary.Write(conn, LE, a)
+	err = binary.Write(conn, _LE, a)
 	checkError(err)
 }
 
@@ -106,9 +106,9 @@ func transSub(conn *net.TCPConn, rate int, src int, effect int, dip int, manual 
 		sub_effect:  uint8(effect),
 		sub_dip_src: uint8(dip)}
 	size := uint32(unsafe.Sizeof(a))
-	err := binary.Write(conn, LE, size)
+	err := binary.Write(conn, _LE, size)
 	checkError(err)
-	err = binary.Write(conn, LE, a)
+	err = binary.Write(conn, _LE, a)
 	checkError(err)
 }
 
@@ -122,9 +122,9 @@ func transUs(conn *net.TCPConn, rate int, src int, src2 int, effect int, dip int
 		main_dip_src: uint8(dip),
 		sub_src:      uint8(src2)}
 	size := uint32(unsafe.Sizeof(a))
-	err := binary.Write(conn, LE, size)
+	err := binary.Write(conn, _LE, size)
 	checkError(err)
-	err = binary.Write(conn, LE, a)
+	err = binary.Write(conn, _LE, a)
 	checkError(err)
 }
 

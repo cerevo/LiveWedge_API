@@ -27,7 +27,7 @@ import (
 	"strings"
 )
 
-var LE = binary.LittleEndian
+var _LE = binary.LittleEndian
 
 const (
 	SW_ID_SwBasicInfo              = 0x03
@@ -74,14 +74,14 @@ func (vsw Vsw) HeartBeat() {
 	send(vsw.conn, buf)
 
 	var len int32
-	err := binary.Read(vsw.conn, LE, &len)
+	err := binary.Read(vsw.conn, _LE, &len)
 	checkError(err)
 	//fmt.Printf("len=%d\n", len)
 	if len != 4 {
 		fmt.Fprintf(os.Stderr, "libvsw: Fatal error. len != 4\n")
 	}
 	var cmd uint32
-	err = binary.Read(vsw.conn, LE, &cmd)
+	err = binary.Read(vsw.conn, _LE, &cmd)
 	checkError(err)
 	//fmt.Printf("cmd=%x\n", cmd)
 }
@@ -95,9 +95,9 @@ func checkError(err error) {
 
 func send(conn io.Writer, data []uint32) {
 	size := uint32(len(data) * 4)
-	err := binary.Write(conn, LE, size)
+	err := binary.Write(conn, _LE, size)
 	checkError(err)
-	err = binary.Write(conn, LE, data)
+	err = binary.Write(conn, _LE, data)
 	checkError(err)
 }
 
@@ -108,21 +108,21 @@ func sendKeyValue(conn *net.TCPConn, key uint32, val int) {
 
 func readBasicInfo(vsw *Vsw) {
 	var len int32
-	err := binary.Read(vsw.conn, LE, &len)
+	err := binary.Read(vsw.conn, _LE, &len)
 	checkError(err)
 
 	var cmd uint32
-	err = binary.Read(vsw.conn, LE, &cmd)
+	err = binary.Read(vsw.conn, _LE, &cmd)
 	checkError(err)
 
 	if cmd != SW_ID_SwBasicInfo {
 		return
 	}
-	err = binary.Read(vsw.conn, LE, &vsw.rev)
+	err = binary.Read(vsw.conn, _LE, &vsw.rev)
 	checkError(err)
-	err = binary.Read(vsw.conn, LE, &vsw.update)
+	err = binary.Read(vsw.conn, _LE, &vsw.update)
 	checkError(err)
-	err = binary.Read(vsw.conn, LE, &vsw.mac)
+	err = binary.Read(vsw.conn, _LE, &vsw.mac)
 	checkError(err)
 }
 

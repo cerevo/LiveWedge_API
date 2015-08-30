@@ -32,11 +32,11 @@ func (vsw Vsw) UploadFile(filename string) error {
 		a.filename[i] = byte(c)
 	}
 	size := uint32(unsafe.Sizeof(a)) + uint32(len(data))
-	err = binary.Write(vsw.conn, LE, size)
+	err = binary.Write(vsw.conn, _LE, size)
 	checkError(err)
-	err = binary.Write(vsw.conn, LE, a)
+	err = binary.Write(vsw.conn, _LE, a)
 	checkError(err)
-	err = binary.Write(vsw.conn, LE, data)
+	err = binary.Write(vsw.conn, _LE, data)
 	checkError(err)
 	return nil
 }
