@@ -28,9 +28,9 @@ type videoTransition struct {
 
 const VALUE_1 = (1 << 16)
 const (
-	VC_MODE_MAIN = iota
-	VC_MODE_SUB
-	VC_MODE_US
+	_VC_MODE_MAIN = iota
+	_VC_MODE_SUB
+	_VC_MODE_US
 )
 
 const (
@@ -78,7 +78,7 @@ func transMain(conn *net.TCPConn, rate int, src int, effect int, dip int, manual
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
 		cmdId:        VALUE_1,
 		rate:         uint32(rate),
-		mode:         VC_MODE_MAIN,
+		mode:         _VC_MODE_MAIN,
 		main_src:     uint8(src),
 		main_effect:  uint8(effect),
 		main_dip_src: uint8(dip)}
@@ -101,7 +101,7 @@ func transSub(conn *net.TCPConn, rate int, src int, effect int, dip int, manual 
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
 		cmdId:       VALUE_1,
 		rate:        uint32(rate),
-		mode:        VC_MODE_SUB,
+		mode:        _VC_MODE_SUB,
 		sub_src:     uint8(src),
 		sub_effect:  uint8(effect),
 		sub_dip_src: uint8(dip)}
@@ -116,7 +116,7 @@ func transUs(conn *net.TCPConn, rate int, src int, src2 int, effect int, dip int
 	a := videoTransition{cmd: SW_ID_DoAutoSwitching,
 		cmdId:        VALUE_1,
 		rate:         uint32(rate),
-		mode:         VC_MODE_US,
+		mode:         _VC_MODE_US,
 		main_src:     uint8(src),
 		main_effect:  uint8(effect),
 		main_dip_src: uint8(dip),
