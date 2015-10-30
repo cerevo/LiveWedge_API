@@ -314,7 +314,7 @@ func readStatus(conn io.Reader) {
 }
 
 func monitorStatus(vsw Vsw) {
-	cmd := []uint32{33}
+	cmd := []uint32{SW_ID_RegisterClient}
 	sendUdp(vsw.udpConn, cmd)
 	for {
 		readStatus(vsw.udpConn)

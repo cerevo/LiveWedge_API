@@ -46,6 +46,7 @@ const (
 	SW_ID_SetTime                  = 0x49
 	SW_ID_SetTimeAndZone           = 0x4a
 	SW_ID_GetTimeAndZone           = 0x4b
+	SW_ID_RegisterClient           = 0x21
 )
 
 // Vsw holds internal connection state.
