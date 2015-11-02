@@ -14,6 +14,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 )
 
 // ID for each status
@@ -314,9 +315,21 @@ func readStatus(conn io.Reader) {
 }
 
 func monitorStatus(vsw Vsw) {
-	cmd := []uint32{SW_ID_RegisterClient}
-	sendUdp(vsw.udpConn, cmd)
+	if vsw.FirmwareRevision() >= 1399 {
+		go keepStatusAlive(*_vsw)
+	} else {
+		cmd := []uint32{SW_ID_RegisterClient}
+		sendUdp(vsw.udpConn, cmd)
+	}
 	for {
 		readStatus(vsw.udpConn)
+	}
+}
+
+func keepStatusAlive(vsw Vsw) {
+	cmd := []uint32{SW_ID_RegisterClient3}
+	for {
+		sendUdp(vsw.udpConn, cmd)
+		time.Sleep(30 * time.Second)
 	}
 }
