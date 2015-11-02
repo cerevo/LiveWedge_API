@@ -8,16 +8,21 @@ import (
 	"time"
 )
 
+const (
+	rate = 2000 // msec
+	wait = 1000 // msec
+)
+
 func sample_wipe(vsw *libvsw.Vsw, src1, src2 int) {
 	log.Printf("wipeTest src1=%d src2=%d\n", src1, src2)
 	vsw.Cut(src1)
 
 	for wipe_type := 0; wipe_type < libvsw.WIPE_TYPE_NUM; wipe_type++ {
 		log.Printf("wipe_type=%d\n", wipe_type)
-		vsw.Wipe(2000, src2, wipe_type)
-		time.Sleep(3 * time.Second)
-		vsw.Wipe(2000, src1, wipe_type)
-		time.Sleep(3 * time.Second)
+		vsw.Wipe(rate, src2, wipe_type)
+		time.Sleep((rate + wait) * time.Millisecond)
+		vsw.Wipe(rate, src1, wipe_type)
+		time.Sleep((rate + wait) * time.Millisecond)
 	}
 }
 
